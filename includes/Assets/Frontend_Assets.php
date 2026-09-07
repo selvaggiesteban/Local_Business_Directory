@@ -22,7 +22,7 @@ class Frontend_Assets {
             'lbd-frontend',
             LBD_PLUGIN_URL . 'assets/js/frontend.js',
             [ 'jquery' ],
-            LBD_VERSION,
+            LBD_VERSION . '.' . time(),
             true
         );
 

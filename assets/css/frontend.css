@@ -484,12 +484,9 @@
 .lbd-gallery-track {
     display: flex;
     gap: 16px;
+    width: max-content;
     will-change: transform;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.lbd-gallery-track::-webkit-scrollbar {
-    display: none;
 }
 
 .lbd-gallery-item {
@@ -498,9 +495,9 @@
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    opacity: 0.5;
-    transform: scale(0.85);
+    transition: opacity 0.4s, transform 0.4s, box-shadow 0.4s;
+    opacity: 0.4;
+    transform: scale(0.88);
 }
 
 .lbd-gallery-item.active {
