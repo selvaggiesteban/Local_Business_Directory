@@ -1,0 +1,25 @@
+{
+    "name": "selvaggiesteban/local-business-directory",
+    "description": "Plugin de directorio de negocios locales para WordPress",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Esteban Selvaggi",
+            "email": "esteban@selvaggiesteban.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "wordpress/wordpress": ">=6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "LBD\\": "includes/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "lint": "phpcs"
+    }
+}

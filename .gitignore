@@ -1,0 +1,25 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.log
+*.tmp
+*.cache
+
+# Composer
+composer.lock
+
+# Archives
+*.zip
+*.tar.gz
