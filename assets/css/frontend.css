@@ -316,6 +316,12 @@
     padding: 0;
 }
 
+.lbd-single-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
 /* Hero Full Width */
 .lbd-single-hero {
     position: relative;
@@ -533,6 +539,46 @@
 .lbd-archive-header p {
     color: var(--lbd-text-light);
     margin: 0;
+}
+
+/* Floating WhatsApp Button */
+.lbd-whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    z-index: 9999;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.lbd-whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+}
+
+.lbd-whatsapp-float img {
+    width: 34px;
+    height: 34px;
+}
+
+@media (max-width: 768px) {
+    .lbd-whatsapp-float {
+        bottom: 20px;
+        right: 20px;
+        width: 54px;
+        height: 54px;
+    }
+    .lbd-whatsapp-float img {
+        width: 30px;
+        height: 30px;
+    }
 }
 
 /* Responsive */

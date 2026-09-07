@@ -221,6 +221,13 @@ while ( have_posts() ) : the_post();
 
 </div>
 
+<?php if ( $whatsapp ) : ?>
+<!-- Floating WhatsApp Button -->
+<a href="https://wa.me/<?php echo esc_attr( $whatsapp ); ?>" target="_blank" rel="noopener" class="lbd-whatsapp-float" title="WhatsApp">
+    <img src="<?php echo esc_url( LBD_PLUGIN_URL . 'assets/img/whatsapp.svg' ); ?>" alt="WhatsApp">
+</a>
+<?php endif; ?>
+
 <?php
 endwhile;
 

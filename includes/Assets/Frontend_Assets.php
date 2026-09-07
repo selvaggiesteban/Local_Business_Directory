@@ -15,7 +15,7 @@ class Frontend_Assets {
             'lbd-frontend',
             LBD_PLUGIN_URL . 'assets/css/frontend.css',
             [],
-            LBD_VERSION
+            LBD_VERSION . '.' . time()
         );
 
         wp_enqueue_script(
