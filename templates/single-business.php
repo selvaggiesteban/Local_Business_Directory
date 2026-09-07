@@ -6,10 +6,11 @@
 
 get_header();
 
-while ( have_posts() ) : the_post();
-    $post_id    = get_the_ID();
-    $title      = get_the_title();
-    $content    = get_the_content();
+global $post;
+if ( $post ) :
+    $post_id    = $post->ID;
+    $title      = $post->post_title;
+    $content    = $post->post_content;
     $logo       = get_post_meta( $post_id, '_lbd_logo', true );
     $tagline    = get_post_meta( $post_id, '_lbd_tagline', true );
     $address    = get_post_meta( $post_id, '_lbd_address', true );
@@ -259,14 +260,14 @@ while ( have_posts() ) : the_post();
 
 </div>
 
-<?php if ( $whatsapp ) : ?>
-<!-- Floating WhatsApp Button -->
-<a href="https://wa.me/<?php echo esc_attr( $whatsapp ); ?>" target="_blank" rel="noopener" class="lbd-whatsapp-float" title="WhatsApp">
-    <img src="<?php echo esc_url( LBD_PLUGIN_URL . 'assets/img/whatsapp.svg' ); ?>" alt="WhatsApp">
-</a>
+    <?php if ( $whatsapp ) : ?>
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/<?php echo esc_attr( $whatsapp ); ?>" target="_blank" rel="noopener" class="lbd-whatsapp-float" title="WhatsApp">
+        <img src="<?php echo esc_url( LBD_PLUGIN_URL . 'assets/img/whatsapp.svg' ); ?>" alt="WhatsApp">
+    </a>
+    <?php endif; ?>
+
 <?php endif; ?>
 
 <?php
-endwhile;
-
 get_footer();

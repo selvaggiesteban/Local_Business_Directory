@@ -484,11 +484,7 @@
 .lbd-gallery-track {
     display: flex;
     gap: 16px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding: 0 calc(50% - 160px);
+    will-change: transform;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -499,7 +495,6 @@
 .lbd-gallery-item {
     flex: 0 0 320px;
     height: 240px;
-    scroll-snap-align: center;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
