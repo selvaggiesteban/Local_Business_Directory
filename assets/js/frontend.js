@@ -111,10 +111,10 @@
             var $dots = $carousel.find('.lbd-gallery-dot');
             var total = $items.length;
             var current = 0;
-            var itemWidth = $items.outerWidth(true);
-            var startX = 0;
-            var currentX = 0;
-            var isDragging = false;
+
+            function getItemWidth() {
+                return $items.first().outerWidth(true);
+            }
 
             function goTo(index) {
                 if (index < 0) index = 0;
@@ -127,8 +127,10 @@
                 $dots.removeClass('active');
                 $dots.eq(current).addClass('active');
 
-                var scrollPos = $items.eq(current).position().left + $track.scrollLeft() - ($track.parent().width() / 2) + ($items.eq(current).outerWidth() / 2);
-                $track.animate({ scrollLeft: scrollPos }, 400, 'swing');
+                var itemW = getItemWidth();
+                var trackW = $track.parent().width();
+                var offset = (trackW / 2) - (itemW / 2) - (current * itemW);
+                $track.css('transform', 'translateX(' + offset + 'px)');
             }
 
             $carousel.on('click', '.lbd-gallery-next', function () {
@@ -151,27 +153,32 @@
             });
 
             /* Touch / Swipe */
+            var touchStartX = 0;
+            var touchDeltaX = 0;
+            var isTouching = false;
+
             $track.on('touchstart', function (e) {
-                startX = e.originalEvent.touches[0].clientX;
-                isDragging = true;
+                touchStartX = e.originalEvent.touches[0].clientX;
+                touchDeltaX = 0;
+                isTouching = true;
                 $track.css('transition', 'none');
             });
 
             $track.on('touchmove', function (e) {
-                if (!isDragging) return;
-                currentX = e.originalEvent.touches[0].clientX;
-                var diff = currentX - startX;
-                var scrollOffset = $items.eq(current).position().left + $track.scrollLeft() - ($track.parent().width() / 2) + ($items.eq(current).outerWidth() / 2);
-                $track.scrollLeft(scrollOffset - diff);
+                if (!isTouching) return;
+                touchDeltaX = e.originalEvent.touches[0].clientX - touchStartX;
+                var itemW = getItemWidth();
+                var trackW = $track.parent().width();
+                var baseOffset = (trackW / 2) - (itemW / 2) - (current * itemW);
+                $track.css('transform', 'translateX(' + (baseOffset + touchDeltaX) + 'px)');
             });
 
             $track.on('touchend', function () {
-                if (!isDragging) return;
-                isDragging = false;
+                if (!isTouching) return;
+                isTouching = false;
                 $track.css('transition', '');
-                var diff = currentX - startX;
-                if (Math.abs(diff) > 50) {
-                    if (diff < 0) goTo(current + 1);
+                if (Math.abs(touchDeltaX) > 50) {
+                    if (touchDeltaX < 0) goTo(current + 1);
                     else goTo(current - 1);
                 } else {
                     goTo(current);
@@ -179,36 +186,37 @@
             });
 
             /* Mouse drag */
+            var mouseStartX = 0;
+            var mouseDeltaX = 0;
+            var isMouseDragging = false;
+
             $track.on('mousedown', function (e) {
-                startX = e.clientX;
-                isDragging = true;
+                mouseStartX = e.clientX;
+                mouseDeltaX = 0;
+                isMouseDragging = true;
+                $track.css('transition', 'none');
                 e.preventDefault();
             });
 
             $(document).on('mousemove', function (e) {
-                if (!isDragging) return;
-                currentX = e.clientX;
-                var diff = currentX - startX;
-                var scrollOffset = $items.eq(current).position().left + $track.scrollLeft() - ($track.parent().width() / 2) + ($items.eq(current).outerWidth() / 2);
-                $track.scrollLeft(scrollOffset - diff);
+                if (!isMouseDragging) return;
+                mouseDeltaX = e.clientX - mouseStartX;
+                var itemW = getItemWidth();
+                var trackW = $track.parent().width();
+                var baseOffset = (trackW / 2) - (itemW / 2) - (current * itemW);
+                $track.css('transform', 'translateX(' + (baseOffset + mouseDeltaX) + 'px)');
             });
 
             $(document).on('mouseup', function () {
-                if (!isDragging) return;
-                isDragging = false;
-                var diff = currentX - startX;
-                if (Math.abs(diff) > 50) {
-                    if (diff < 0) goTo(current + 1);
+                if (!isMouseDragging) return;
+                isMouseDragging = false;
+                $track.css('transition', '');
+                if (Math.abs(mouseDeltaX) > 50) {
+                    if (mouseDeltaX < 0) goTo(current + 1);
                     else goTo(current - 1);
                 } else {
                     goTo(current);
                 }
-            });
-
-            /* Keyboard */
-            $carousel.on('keydown', function (e) {
-                if (e.key === 'ArrowLeft') goTo(current - 1);
-                if (e.key === 'ArrowRight') goTo(current + 1);
             });
 
             /* Init */

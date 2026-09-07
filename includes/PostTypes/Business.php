@@ -45,11 +45,7 @@ class Business {
             'capability_type'     => 'post',
             'map_meta_cap'        => true,
             'supports'            => [ 'title', 'editor', 'thumbnail', 'excerpt' ],
-            'rewrite'             => [
-                'slug'       => '',
-                'with_front' => false,
-                'feeds'      => true,
-            ],
+            'rewrite'             => false,
             'taxonomies'          => [ 'business_rubro', 'business_categoria', 'business_zona' ],
         ];
 
