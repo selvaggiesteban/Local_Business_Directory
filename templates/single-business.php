@@ -36,37 +36,38 @@ while ( have_posts() ) : the_post();
     $zonas      = get_the_terms( $post_id, 'business_zona' );
 ?>
 
-<div class="lbd-single-wrapper">
-
-    <!-- Hero / Cover -->
-    <div class="lbd-single-hero">
-        <?php if ( $cover ) : ?>
-            <img src="<?php echo esc_url( $cover ); ?>" alt="<?php echo esc_attr( $title ); ?>">
-        <?php else : ?>
-            <div style="width:100%;height:100%;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:80px;color:#fff;font-weight:700;"><?php echo esc_html( mb_substr( $title, 0, 2 ) ); ?></span>
-            </div>
-        <?php endif; ?>
-
+    <!-- Hero / Cover Full Width -->
+    <?php
+    $cover_style = '';
+    if ( $cover ) {
+        $cover_style = 'background-image:url(' . esc_url( $cover ) . ');background-size:cover;background-position:center center;background-repeat:no-repeat;';
+    } else {
+        $cover_style = 'background:linear-gradient(135deg,#2563eb,#7c3aed);';
+    }
+    ?>
+    <div class="lbd-single-hero" style="<?php echo $cover_style; ?>">
         <div class="lbd-single-hero-overlay">
             <?php if ( $logo ) : ?>
-                <div style="margin-bottom:12px;">
-                    <?php echo wp_get_attachment_image( $logo, [ 80, 80 ], false, [ 'style' => 'border-radius:12px;border:3px solid rgba(255,255,255,0.3);' ] ); ?>
+                <div class="lbd-single-logo-wrap">
+                    <?php echo wp_get_attachment_image( $logo, 'medium', false, [ 'class' => 'lbd-single-logo' ] ); ?>
                 </div>
             <?php endif; ?>
             <h1><?php echo esc_html( $title ); ?></h1>
+            <?php if ( $address ) : ?>
+                <p class="lbd-single-address">Dirección: <?php echo esc_html( $address ); ?></p>
+            <?php endif; ?>
             <?php if ( $tagline ) : ?>
                 <p class="lbd-single-tagline"><?php echo esc_html( $tagline ); ?></p>
             <?php endif; ?>
-            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="lbd-single-tags">
                 <?php if ( $rubros && ! is_wp_error( $rubros ) ) : ?>
                     <?php foreach ( $rubros as $r ) : ?>
-                        <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:13px;"><?php echo esc_html( $r->name ); ?></span>
+                        <span class="lbd-tag"><?php echo esc_html( $r->name ); ?></span>
                     <?php endforeach; ?>
                 <?php endif; ?>
                 <?php if ( $zonas && ! is_wp_error( $zonas ) ) : ?>
                     <?php foreach ( $zonas as $z ) : ?>
-                        <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:13px;"><?php echo esc_html( $z->name ); ?></span>
+                        <span class="lbd-tag"><?php echo esc_html( $z->name ); ?></span>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
@@ -100,6 +101,9 @@ while ( have_posts() ) : the_post();
             </a>
         <?php endif; ?>
     </div>
+
+    <!-- Content Inner -->
+    <div class="lbd-single-inner">
 
     <!-- Quiénes Somos -->
     <?php if ( $about ) : ?>
@@ -212,6 +216,8 @@ while ( have_posts() ) : the_post();
         </div>
     </div>
     <?php endif; ?>
+
+    </div><!-- .lbd-single-inner -->
 
 </div>
 
