@@ -1,5 +1,5 @@
 /**
- * Local Business Directory - Frontend AJAX Search + Gallery Carousel
+ * Local Business Directory - Frontend AJAX Search + Gallery Carousel + Lightbox
  */
 (function ($) {
     'use strict';
@@ -31,7 +31,6 @@
         var $grid = $('#lbd-results-grid');
         var $info = $('#lbd-results-info');
         var $count = $('#lbd-results-count');
-        var $pagination = $('#lbd-pagination');
 
         var data = {
             action: 'lbd_search_businesses',
@@ -102,126 +101,206 @@
         );
     }
 
-    /* ===== Gallery Carousel ===== */
+    /* ===== Gallery Carousel (Infinite Loop) ===== */
     $(document).ready(function () {
         $('.lbd-gallery-carousel').each(function () {
             var $carousel = $(this);
             var $track = $carousel.find('.lbd-gallery-track');
-            var $items = $carousel.find('.lbd-gallery-item');
-            var $dots = $carousel.find('.lbd-gallery-dot');
-            var total = $items.length;
-            var current = 0;
+            var $dotsContainer = $carousel.find('.lbd-gallery-dots');
+            var $origItems = $carousel.find('.lbd-gallery-item:not(.lbd-clone)');
+            var realCount = $origItems.length;
+            if (realCount === 0) return;
 
-            function getItemWidth() {
-                return $items.first().outerWidth(true);
+            var realImages = [];
+            $origItems.each(function (i) {
+                $(this).attr('data-real-index', i);
+                realImages.push($(this).find('img').attr('src'));
+            });
+
+            var CLONE_COUNT = 2;
+            for (var c = 0; c < CLONE_COUNT; c++) {
+                $origItems.last().clone().removeClass('active').addClass('lbd-clone').attr('data-real-index', $origItems.last().index()).prependTo($track);
+                $origItems.first().clone().removeClass('active').addClass('lbd-clone').attr('data-real-index', 0).appendTo($track);
             }
 
-            function goTo(index) {
-                if (index < 0) index = 0;
-                if (index >= total) index = total - 1;
-                current = index;
+            var $allItems = $track.children();
+            var total = $allItems.length;
+            var currentReal = 0;
+            var wrapperIndex = CLONE_COUNT;
 
-                $items.removeClass('active');
-                $items.eq(current).addClass('active');
+            function rebuildDots() {
+                $dotsContainer.empty();
+                for (var d = 0; d < realCount; d++) {
+                    var $dot = $('<span class="lbd-gallery-dot"></span>').attr('data-index', d);
+                    if (d === currentReal) $dot.addClass('active');
+                    $dotsContainer.append($dot);
+                }
+            }
+            rebuildDots();
 
-                $dots.removeClass('active');
-                $dots.eq(current).addClass('active');
+            function goTo(realIndex, animate) {
+                if (animate === undefined) animate = true;
+                currentReal = realIndex;
+                wrapperIndex = currentReal + CLONE_COUNT;
 
-                var itemW = getItemWidth();
+                var itemW = $allItems.first().outerWidth(true);
                 var trackW = $track.parent().width();
-                var offset = (trackW / 2) - (itemW / 2) - (current * itemW);
-                $track.css('transform', 'translateX(' + offset + 'px)');
+                var px = (trackW / 2) - (itemW / 2) - (wrapperIndex * itemW);
+
+                if (!animate) $track.css('transition', 'none');
+                $track.css('transform', 'translateX(' + px + 'px)');
+                if (!animate) $track[0].offsetHeight;
+
+                $allItems.removeClass('active');
+                $allItems.eq(wrapperIndex).addClass('active');
+
+                $dotsContainer.find('.lbd-gallery-dot').removeClass('active');
+                $dotsContainer.find('.lbd-gallery-dot').eq(currentReal).addClass('active');
             }
 
-            $carousel.on('click', '.lbd-gallery-next', function () {
-                goTo(current + 1);
-            });
-
-            $carousel.on('click', '.lbd-gallery-prev', function () {
-                goTo(current - 1);
-            });
-
-            $carousel.on('click', '.lbd-gallery-dot', function () {
-                goTo($(this).data('index'));
-            });
-
-            $items.on('click', function () {
-                var idx = $(this).data('index');
-                if (idx !== current) {
-                    goTo(idx);
+            $track.on('transitionend', function () {
+                if (currentReal < 0) {
+                    $track.css('transition', 'none');
+                    currentReal = realCount - 1;
+                    wrapperIndex = currentReal + CLONE_COUNT;
+                    goTo(currentReal, false);
+                } else if (currentReal >= realCount) {
+                    $track.css('transition', 'none');
+                    currentReal = 0;
+                    wrapperIndex = currentReal + CLONE_COUNT;
+                    goTo(currentReal, false);
                 }
             });
 
-            /* Touch / Swipe */
-            var touchStartX = 0;
-            var touchDeltaX = 0;
-            var isTouching = false;
+            $carousel.on('click', '.lbd-gallery-next', function (e) {
+                e.stopPropagation();
+                goTo(currentReal + 1);
+            });
+
+            $carousel.on('click', '.lbd-gallery-prev', function (e) {
+                e.stopPropagation();
+                goTo(currentReal - 1);
+            });
+
+            $carousel.on('click', '.lbd-gallery-dot', function (e) {
+                e.stopPropagation();
+                goTo(parseInt($(this).data('index')));
+            });
+
+            var didDrag = false;
+
+            $track.on('click', '.lbd-gallery-item', function (e) {
+                if (didDrag) return;
+                e.stopPropagation();
+                var realIdx = parseInt($(this).data('real-index'));
+                if (isNaN(realIdx)) return;
+                openLightbox(realIdx, realImages);
+            });
+
+            /* Touch */
+            var touchStartX = 0, touchDeltaX = 0, isTouching = false;
 
             $track.on('touchstart', function (e) {
                 touchStartX = e.originalEvent.touches[0].clientX;
                 touchDeltaX = 0;
                 isTouching = true;
+                didDrag = false;
                 $track.css('transition', 'none');
             });
 
             $track.on('touchmove', function (e) {
                 if (!isTouching) return;
                 touchDeltaX = e.originalEvent.touches[0].clientX - touchStartX;
-                var itemW = getItemWidth();
+                if (Math.abs(touchDeltaX) > 5) didDrag = true;
+                var itemW = $allItems.first().outerWidth(true);
                 var trackW = $track.parent().width();
-                var baseOffset = (trackW / 2) - (itemW / 2) - (current * itemW);
-                $track.css('transform', 'translateX(' + (baseOffset + touchDeltaX) + 'px)');
+                var basePx = (trackW / 2) - (itemW / 2) - (wrapperIndex * itemW);
+                $track.css('transform', 'translateX(' + (basePx + touchDeltaX) + 'px)');
             });
 
             $track.on('touchend', function () {
                 if (!isTouching) return;
                 isTouching = false;
                 $track.css('transition', '');
-                if (Math.abs(touchDeltaX) > 50) {
-                    if (touchDeltaX < 0) goTo(current + 1);
-                    else goTo(current - 1);
-                } else {
-                    goTo(current);
-                }
+                if (touchDeltaX < -50) goTo(currentReal + 1);
+                else if (touchDeltaX > 50) goTo(currentReal - 1);
+                else goTo(currentReal);
             });
 
             /* Mouse drag */
-            var mouseStartX = 0;
-            var mouseDeltaX = 0;
-            var isMouseDragging = false;
+            var mouseStartX = 0, mouseDeltaX = 0, isMouseDragging = false;
 
             $track.on('mousedown', function (e) {
                 mouseStartX = e.clientX;
                 mouseDeltaX = 0;
                 isMouseDragging = true;
+                didDrag = false;
                 $track.css('transition', 'none');
                 e.preventDefault();
             });
 
-            $(document).on('mousemove', function (e) {
+            $(document).on('mousemove.lbdCarousel', function (e) {
                 if (!isMouseDragging) return;
                 mouseDeltaX = e.clientX - mouseStartX;
-                var itemW = getItemWidth();
+                if (Math.abs(mouseDeltaX) > 5) didDrag = true;
+                var itemW = $allItems.first().outerWidth(true);
                 var trackW = $track.parent().width();
-                var baseOffset = (trackW / 2) - (itemW / 2) - (current * itemW);
-                $track.css('transform', 'translateX(' + (baseOffset + mouseDeltaX) + 'px)');
+                var basePx = (trackW / 2) - (itemW / 2) - (wrapperIndex * itemW);
+                $track.css('transform', 'translateX(' + (basePx + mouseDeltaX) + 'px)');
             });
 
-            $(document).on('mouseup', function () {
+            $(document).on('mouseup.lbdCarousel', function () {
                 if (!isMouseDragging) return;
                 isMouseDragging = false;
                 $track.css('transition', '');
-                if (Math.abs(mouseDeltaX) > 50) {
-                    if (mouseDeltaX < 0) goTo(current + 1);
-                    else goTo(current - 1);
-                } else {
-                    goTo(current);
-                }
+                if (mouseDeltaX < -50) goTo(currentReal + 1);
+                else if (mouseDeltaX > 50) goTo(currentReal - 1);
+                else goTo(currentReal);
             });
 
-            /* Init */
             goTo(0);
         });
+
+        /* ===== Lightbox ===== */
+        function openLightbox(index, images) {
+            if (!images || images.length === 0) return;
+            var lbIndex = index;
+
+            var $lb = $(
+                '<div class="lbd-lightbox">' +
+                    '<button class="lbd-lb-close">&times;</button>' +
+                    '<button class="lbd-lb-prev">&#8249;</button>' +
+                    '<button class="lbd-lb-next">&#8250;</button>' +
+                    '<div class="lbd-lb-img-wrap"><img class="lbd-lb-img" src="" alt=""></div>' +
+                    '<div class="lbd-lb-counter"></div>' +
+                '</div>'
+            );
+            $('body').append($lb).css('overflow', 'hidden');
+
+            function showImg(i) {
+                lbIndex = i;
+                $lb.find('.lbd-lb-img').attr('src', images[lbIndex]);
+                $lb.find('.lbd-lb-counter').text((lbIndex + 1) + ' / ' + images.length);
+            }
+            showImg(lbIndex);
+
+            function closeLB() {
+                $lb.remove();
+                $('body').css('overflow', '');
+                $(document).off('keydown.lbdLB');
+            }
+
+            $lb.on('click', '.lbd-lb-close', closeLB);
+            $lb.on('click', '.lbd-lb-prev', function () { showImg(lbIndex > 0 ? lbIndex - 1 : images.length - 1); });
+            $lb.on('click', '.lbd-lb-next', function () { showImg(lbIndex < images.length - 1 ? lbIndex + 1 : 0); });
+            $lb.on('click', function (e) { if (e.target === this) closeLB(); });
+
+            $(document).on('keydown.lbdLB', function (e) {
+                if (e.key === 'Escape') closeLB();
+                if (e.key === 'ArrowLeft') showImg(lbIndex > 0 ? lbIndex - 1 : images.length - 1);
+                if (e.key === 'ArrowRight') showImg(lbIndex < images.length - 1 ? lbIndex + 1 : 0);
+            });
+        }
     });
 
 })(jQuery);
