@@ -133,6 +133,31 @@ while ( have_posts() ) : the_post();
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             <?php echo esc_html( $address ); ?>
         </p>
+        <?php if ( $lat && $lng ) : ?>
+        <div class="lbd-single-map">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3280.0!2d<?php echo esc_attr( $lng ); ?>!3d<?php echo esc_attr( $lat ); ?>!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDI0JzI0LjAiUyA1OeHJp7sVw4Kp!5e0!3m2!1ses!2sar!4v1700000000000!5m2!1ses!2sar"
+                width="100%"
+                height="350"
+                style="border:0;border-radius:12px;margin-top:12px;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+        <?php elseif ( $maps_url ) : ?>
+        <div class="lbd-single-map">
+            <iframe
+                src="https://maps.google.com/maps?q=<?php echo urlencode( $address ); ?>&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="350"
+                style="border:0;border-radius:12px;margin-top:12px;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 
@@ -168,17 +193,30 @@ while ( have_posts() ) : the_post();
     <?php if ( ! empty( $gallery ) && is_array( $gallery ) ) : ?>
     <div class="lbd-single-section">
         <h2>Galería de Imágenes</h2>
-        <div class="lbd-gallery-grid">
-            <?php foreach ( $gallery as $image_id ) : ?>
-                <?php $img_url = wp_get_attachment_image_url( $image_id, 'large' ); ?>
-                <?php if ( $img_url ) : ?>
-                <div class="lbd-gallery-item">
-                    <a href="<?php echo esc_url( $img_url ); ?>" target="_blank">
-                        <?php echo wp_get_attachment_image( $image_id, 'medium' ); ?>
-                    </a>
-                </div>
-                <?php endif; ?>
-            <?php endforeach; ?>
+        <div class="lbd-gallery-carousel" data-count="<?php echo count( $gallery ); ?>">
+            <div class="lbd-gallery-track">
+                <?php foreach ( $gallery as $i => $image_id ) : ?>
+                    <?php $img_url = wp_get_attachment_image_url( $image_id, 'large' ); ?>
+                    <?php if ( $img_url ) : ?>
+                    <div class="lbd-gallery-item<?php echo $i === 0 ? ' active' : ''; ?>" data-index="<?php echo $i; ?>">
+                        <img src="<?php echo esc_url( $img_url ); ?>" alt="" loading="lazy">
+                    </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+            <?php if ( count( $gallery ) > 1 ) : ?>
+            <button class="lbd-gallery-arrow lbd-gallery-prev" aria-label="Anterior">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="lbd-gallery-arrow lbd-gallery-next" aria-label="Siguiente">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <div class="lbd-gallery-dots">
+                <?php foreach ( $gallery as $i => $image_id ) : ?>
+                    <span class="lbd-gallery-dot<?php echo $i === 0 ? ' active' : ''; ?>" data-index="<?php echo $i; ?>"></span>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
     <?php endif; ?>
