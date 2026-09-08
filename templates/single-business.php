@@ -110,8 +110,10 @@ if ( $post ) :
     <?php if ( $about ) : ?>
     <div class="lbd-single-section">
         <h2>Quiénes Somos</h2>
-        <div class="lbd-single-content">
-            <?php echo wp_kses_post( wpautop( $about ) ); ?>
+        <div class="lbd-about-card">
+            <div class="lbd-single-content">
+                <?php echo wp_kses_post( wpautop( $about ) ); ?>
+            </div>
         </div>
     </div>
     <?php endif; ?>
@@ -192,7 +194,7 @@ if ( $post ) :
 
     <!-- Galería -->
     <?php if ( ! empty( $gallery ) && is_array( $gallery ) ) : ?>
-    <div class="lbd-single-section">
+    <div class="lbd-single-section lbd-gallery-section">
         <h2>Galería de Imágenes</h2>
         <div class="lbd-gallery-carousel" data-count="<?php echo count( $gallery ); ?>">
             <div class="lbd-gallery-track">
