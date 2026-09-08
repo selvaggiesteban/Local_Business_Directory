@@ -144,8 +144,9 @@
                 wrapperIndex = currentReal + CLONE_COUNT;
 
                 var itemW = $allItems.first().outerWidth(true);
-                var trackW = $track.parent().width();
-                var px = (trackW / 2) - (itemW / 2) - (wrapperIndex * itemW);
+                var gap = parseInt($track.css('gap')) || 20;
+                var trackW = $carousel.width();
+                var px = (trackW - itemW) / 2 - (wrapperIndex * (itemW + gap));
 
                 if (!animate) $track.css('transition', 'none');
                 $track.css('transform', 'translateX(' + px + 'px)');
@@ -213,8 +214,9 @@
                 touchDeltaX = e.originalEvent.touches[0].clientX - touchStartX;
                 if (Math.abs(touchDeltaX) > 5) didDrag = true;
                 var itemW = $allItems.first().outerWidth(true);
-                var trackW = $track.parent().width();
-                var basePx = (trackW / 2) - (itemW / 2) - (wrapperIndex * itemW);
+                var gap = parseInt($track.css('gap')) || 20;
+                var trackW = $carousel.width();
+                var basePx = (trackW - itemW) / 2 - (wrapperIndex * (itemW + gap));
                 $track.css('transform', 'translateX(' + (basePx + touchDeltaX) + 'px)');
             });
 
@@ -244,8 +246,9 @@
                 mouseDeltaX = e.clientX - mouseStartX;
                 if (Math.abs(mouseDeltaX) > 5) didDrag = true;
                 var itemW = $allItems.first().outerWidth(true);
-                var trackW = $track.parent().width();
-                var basePx = (trackW / 2) - (itemW / 2) - (wrapperIndex * itemW);
+                var gap = parseInt($track.css('gap')) || 20;
+                var trackW = $carousel.width();
+                var basePx = (trackW - itemW) / 2 - (wrapperIndex * (itemW + gap));
                 $track.css('transform', 'translateX(' + (basePx + mouseDeltaX) + 'px)');
             });
 
