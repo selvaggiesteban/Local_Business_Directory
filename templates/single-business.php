@@ -37,6 +37,22 @@ if ( $post ) :
     .lbd-lb-counter{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.7);font-size:14px}
     @media(max-width:768px){.lbd-gallery-item{flex:0 0 70vw;max-width:none;height:320px}.lbd-gallery-arrow{width:36px;height:36px}.lbd-gallery-prev{left:8px}.lbd-gallery-next{right:8px}}
     @media(max-width:480px){.lbd-gallery-item{flex:0 0 82vw;max-width:none;height:260px}}
+    .lbd-search-toggle{position:absolute;top:20px;right:20px;z-index:10;width:48px;height:48px;border-radius:50%;border:none;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s}
+    .lbd-search-toggle:hover{background:rgba(0,0,0,.7);transform:scale(1.1)}
+    .lbd-search-overlay{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:#000!important;z-index:100000!important;display:none;overflow-y:auto;animation:lbdFadeIn .25s ease}
+    .lbd-search-overlay.active{display:block!important}
+    .lbd-search-close{position:fixed;top:20px;right:24px;z-index:100001;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s}
+    .lbd-search-close:hover{background:rgba(255,255,255,.15)}
+    .lbd-search-overlay-inner{width:100%;max-width:1100px;margin:0 auto;padding:80px 20px 40px;color:#1f2937}
+    .lbd-search-overlay-inner h2{color:#fff;margin:0 0 24px;font-size:28px}
+    .lbd-search-overlay-inner .lbd-search-form{background:#fff;border-radius:12px;padding:24px;margin-bottom:24px}
+    .lbd-search-overlay-inner .lbd-results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+    .lbd-search-overlay-inner .lbd-results-info{color:rgba(255,255,255,.7);margin-bottom:16px}
+    .lbd-search-overlay-inner .lbd-pagination{display:flex;justify-content:center;gap:8px;margin-top:24px}
+    .lbd-search-overlay-inner .lbd-pagination button{padding:8px 16px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1f2937;font-size:14px;cursor:pointer;transition:all .2s}
+    .lbd-search-overlay-inner .lbd-pagination button:hover{border-color:#2563eb;color:#2563eb}
+    .lbd-search-overlay-inner .lbd-pagination button.active{background:#2563eb;color:#fff;border-color:#2563eb}
+    .lbd-search-overlay-inner .lbd-no-results{text-align:center;padding:40px;color:rgba(255,255,255,.5);grid-column:1/-1}
     </style>';
     $post_id    = $post->ID;
     $title      = $post->post_title;
@@ -77,6 +93,9 @@ if ( $post ) :
     }
     ?>
     <div class="lbd-single-hero" style="<?php echo $cover_style; ?>">
+        <button class="lbd-search-toggle" id="lbd-search-toggle" aria-label="Buscar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
         <div class="lbd-single-hero-overlay">
             <?php if ( $logo ) : ?>
                 <div class="lbd-single-logo-wrap">
@@ -280,12 +299,141 @@ if ( $post ) :
 
 </div>
 
+    <!-- Full-Screen Search Overlay -->
+    <div class="lbd-search-overlay" id="lbd-search-overlay">
+        <button class="lbd-search-close" id="lbd-search-close" aria-label="Cerrar">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="lbd-search-overlay-inner">
+            <h2>Buscar Negocios</h2>
+            <?php
+            $all_rubros     = get_terms( [ 'taxonomy' => 'business_rubro', 'hide_empty' => false ] );
+            $all_categorias = get_terms( [ 'taxonomy' => 'business_categoria', 'hide_empty' => false ] );
+            $all_zonas      = get_terms( [ 'taxonomy' => 'business_zona', 'hide_empty' => false ] );
+            ?>
+            <form class="lbd-search-form" id="lbd-overlay-search-form">
+                <div class="lbd-search-fields">
+                    <div class="lbd-search-field">
+                        <label for="lbd-overlay-search-keyword">Buscar</label>
+                        <input type="text" id="lbd-overlay-search-keyword" name="keyword" placeholder="Nombre del negocio...">
+                    </div>
+                    <div class="lbd-search-field">
+                        <label for="lbd-overlay-search-rubro">Rubro</label>
+                        <select id="lbd-overlay-search-rubro" name="rubro">
+                            <option value="">Todos los rubros</option>
+                            <?php foreach ( $all_rubros as $r ) : ?>
+                                <option value="<?php echo esc_attr( $r->slug ); ?>"><?php echo esc_html( $r->name ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="lbd-search-field">
+                        <label for="lbd-overlay-search-categoria">Categoría</label>
+                        <select id="lbd-overlay-search-categoria" name="categoria">
+                            <option value="">Todas las categorías</option>
+                            <?php foreach ( $all_categorias as $c ) : ?>
+                                <option value="<?php echo esc_attr( $c->slug ); ?>"><?php echo esc_html( $c->name ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="lbd-search-field">
+                        <label for="lbd-overlay-search-zona">Zona / Localidad</label>
+                        <select id="lbd-overlay-search-zona" name="zona">
+                            <option value="">Todas las zonas</option>
+                            <?php foreach ( $all_zonas as $z ) : ?>
+                                <option value="<?php echo esc_attr( $z->slug ); ?>"><?php echo esc_html( $z->name ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="lbd-search-field lbd-search-btn-wrapper">
+                        <button type="submit" class="lbd-search-btn">Buscar</button>
+                    </div>
+                </div>
+            </form>
+            <div class="lbd-results-info" id="lbd-overlay-results-info" style="display:none;">
+                <p><span id="lbd-overlay-results-count">0</span> negocios encontrados</p>
+            </div>
+            <div class="lbd-results-grid" id="lbd-overlay-results-grid"></div>
+            <div class="lbd-pagination" id="lbd-overlay-pagination"></div>
+        </div>
+    </div>
+
     <?php if ( $whatsapp ) : ?>
     <!-- Floating WhatsApp Button -->
     <a href="https://wa.me/<?php echo esc_attr( $whatsapp ); ?>" target="_blank" rel="noopener" class="lbd-whatsapp-float" title="WhatsApp">
         <img src="<?php echo esc_url( LBD_PLUGIN_URL . 'assets/img/whatsapp.svg' ); ?>" alt="WhatsApp">
     </a>
     <?php endif; ?>
+
+<script>
+(function(){
+    var toggle = document.getElementById('lbd-search-toggle');
+    var overlay = document.getElementById('lbd-search-overlay');
+    var close = document.getElementById('lbd-search-close');
+    if (!toggle || !overlay) return;
+
+    toggle.addEventListener('click', function(){
+        overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:100000;display:block;overflow-y:auto';
+    });
+    close.addEventListener('click', function(){ overlay.style.display='none'; });
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.style.display='none'; });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') overlay.style.display='none'; });
+
+    var form = document.getElementById('lbd-overlay-search-form');
+    var grid = document.getElementById('lbd-overlay-results-grid');
+    var info = document.getElementById('lbd-overlay-results-info');
+    var countEl = document.getElementById('lbd-overlay-results-count');
+    var pag = document.getElementById('lbd-overlay-pagination');
+    var curPage = 1;
+
+    function doSearch(page){
+        curPage = page || 1;
+        var data = new FormData();
+        data.append('action','lbd_search_businesses');
+        data.append('nonce','<?php echo wp_create_nonce("lbd_search_nonce"); ?>');
+        data.append('keyword', document.getElementById('lbd-overlay-search-keyword').value);
+        data.append('rubro', document.getElementById('lbd-overlay-search-rubro').value);
+        data.append('categoria', document.getElementById('lbd-overlay-search-categoria').value);
+        data.append('zona', document.getElementById('lbd-overlay-search-zona').value);
+        data.append('page', curPage);
+        data.append('per_page', 12);
+
+        grid.style.opacity = '0.5';
+        fetch('<?php echo admin_url("admin-ajax.php"); ?>', {method:'POST', body:data})
+            .then(function(r){return r.json();})
+            .then(function(res){
+                grid.style.opacity = '1';
+                if(res.success){
+                    grid.innerHTML = res.data.html;
+                    countEl.textContent = res.data.total;
+                    info.style.display = res.data.total > 0 ? 'block' : 'none';
+                    renderPag(res.data.total_pages, res.data.current_page);
+                }
+            }).catch(function(){ grid.style.opacity = '1'; });
+    }
+
+    function renderPag(total, cur){
+        pag.innerHTML = '';
+        if(total<=1) return;
+        for(var i=1;i<=total;i++){
+            (function(p){
+                var btn = document.createElement('button');
+                btn.textContent = p;
+                if(p===cur) btn.className='active';
+                btn.addEventListener('click',function(){doSearch(p);});
+                pag.appendChild(btn);
+            })(i);
+        }
+    }
+
+    form.addEventListener('submit',function(e){e.preventDefault();doSearch(1);});
+    document.getElementById('lbd-overlay-search-keyword').addEventListener('input',function(){
+        clearTimeout(this._t); var self=this; this._t=setTimeout(function(){doSearch(1);},400);
+    });
+    document.getElementById('lbd-overlay-search-rubro').addEventListener('change',function(){doSearch(1);});
+    document.getElementById('lbd-overlay-search-categoria').addEventListener('change',function(){doSearch(1);});
+    document.getElementById('lbd-overlay-search-zona').addEventListener('change',function(){doSearch(1);});
+})();
+</script>
 
 <?php endif; ?>
 
