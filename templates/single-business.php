@@ -90,18 +90,6 @@ if ( $post ) :
             <?php if ( $tagline ) : ?>
                 <p class="lbd-single-tagline"><?php echo esc_html( $tagline ); ?></p>
             <?php endif; ?>
-            <div class="lbd-single-tags">
-                <?php if ( $rubros && ! is_wp_error( $rubros ) ) : ?>
-                    <?php foreach ( $rubros as $r ) : ?>
-                        <span class="lbd-tag"><?php echo esc_html( $r->name ); ?></span>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-                <?php if ( $zonas && ! is_wp_error( $zonas ) ) : ?>
-                    <?php foreach ( $zonas as $z ) : ?>
-                        <span class="lbd-tag"><?php echo esc_html( $z->name ); ?></span>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
         </div>
     </div>
 
