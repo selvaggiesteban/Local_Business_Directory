@@ -39,20 +39,23 @@ if ( $post ) :
     @media(max-width:480px){.lbd-gallery-item{flex:0 0 82vw;max-width:none;height:260px}}
     .lbd-search-toggle{position:absolute;top:20px;right:20px;z-index:10;width:48px;height:48px;border-radius:50%;border:none;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s}
     .lbd-search-toggle:hover{background:rgba(0,0,0,.7);transform:scale(1.1)}
-    .lbd-search-overlay{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:#000!important;z-index:100000!important;display:none;overflow-y:auto;animation:lbdFadeIn .25s ease}
+    .lbd-search-overlay{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:#fff!important;z-index:100000!important;display:none;overflow-y:auto;animation:lbdFadeIn .25s ease}
     .lbd-search-overlay.active{display:block!important}
-    .lbd-search-close{position:fixed;top:20px;right:24px;z-index:100001;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s}
-    .lbd-search-close:hover{background:rgba(255,255,255,.15)}
+    .lbd-search-close{position:fixed;top:20px;right:24px;z-index:100001;background:#000;border:none;color:#fff;font-size:28px;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .2s}
+    .lbd-search-close:hover{transform:scale(1.1)}
     .lbd-search-overlay-inner{width:100%;max-width:1100px;margin:0 auto;padding:80px 20px 40px;color:#1f2937}
-    .lbd-search-overlay-inner h2{color:#fff;margin:0 0 24px;font-size:28px}
-    .lbd-search-overlay-inner .lbd-search-form{background:#fff;border-radius:12px;padding:24px;margin-bottom:24px}
+    .lbd-search-overlay-inner h2{color:#000;margin:0 0 24px;font-size:28px}
+    .lbd-search-overlay-inner .lbd-search-form{background:#f9fafb;border-radius:12px;padding:24px;margin-bottom:24px}
+    .lbd-search-overlay-inner .lbd-search-field input,.lbd-search-overlay-inner .lbd-search-field select{border-radius:8px}
+    .lbd-search-overlay-inner .lbd-search-btn{background:#000;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer}
+    .lbd-search-overlay-inner .lbd-search-btn:hover{background:#333}
     .lbd-search-overlay-inner .lbd-results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-    .lbd-search-overlay-inner .lbd-results-info{color:rgba(255,255,255,.7);margin-bottom:16px}
+    .lbd-search-overlay-inner .lbd-results-info{color:#6b7280;margin-bottom:16px}
     .lbd-search-overlay-inner .lbd-pagination{display:flex;justify-content:center;gap:8px;margin-top:24px}
     .lbd-search-overlay-inner .lbd-pagination button{padding:8px 16px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1f2937;font-size:14px;cursor:pointer;transition:all .2s}
-    .lbd-search-overlay-inner .lbd-pagination button:hover{border-color:#2563eb;color:#2563eb}
-    .lbd-search-overlay-inner .lbd-pagination button.active{background:#2563eb;color:#fff;border-color:#2563eb}
-    .lbd-search-overlay-inner .lbd-no-results{text-align:center;padding:40px;color:rgba(255,255,255,.5);grid-column:1/-1}
+    .lbd-search-overlay-inner .lbd-pagination button:hover{border-color:#000;color:#000}
+    .lbd-search-overlay-inner .lbd-pagination button.active{background:#000;color:#fff;border-color:#000}
+    .lbd-search-overlay-inner .lbd-no-results{text-align:center;padding:40px;color:#9ca3af;grid-column:1/-1}
     </style>';
     $post_id    = $post->ID;
     $title      = $post->post_title;
@@ -372,7 +375,7 @@ if ( $post ) :
     if (!toggle || !overlay) return;
 
     toggle.addEventListener('click', function(){
-        overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:100000;display:block;overflow-y:auto';
+        overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:100000;display:block;overflow-y:auto';
     });
     close.addEventListener('click', function(){ overlay.style.display='none'; });
     overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.style.display='none'; });
