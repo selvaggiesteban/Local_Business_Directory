@@ -554,14 +554,19 @@
     height: 44px;
     border-radius: 50%;
     border: 1px solid #d1d5db;
-    background: rgba(255,255,255,0.95);
-    color: #374151;
+    background: rgba(255,255,255,0.95) !important;
+    color: #374151 !important;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
     transition: all 0.3s;
+    padding: 0;
+    font-size: 0;
+    line-height: 0;
+    text-decoration: none;
+    outline: none;
 }
 
 .lbd-gallery-arrow:hover {
