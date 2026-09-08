@@ -448,13 +448,15 @@
 
 /* About Section Card */
 .lbd-about-card {
-    background: #FAFAFA;
+    background: #f1f1f1;
     border-radius: 8px;
+    border: 1px solid #ccc;
     padding: 24px 28px;
 }
 
 .lbd-about-card .lbd-single-content {
-    font-size: 18px;
+    font-size: 24px;
+    font-weight: 500;
     line-height: 1.3em;
     color: var(--lbd-text);
 }
