@@ -54,6 +54,15 @@ class Business_Metaboxes {
             'normal',
             'default'
         );
+
+        add_meta_box(
+            'lbd_featured',
+            'Negocio Destacado',
+            [ $this, 'render_featured' ],
+            'business',
+            'side',
+            'high'
+        );
     }
 
     public function render_contact_info( $post ) {
@@ -265,6 +274,18 @@ class Business_Metaboxes {
         <?php
     }
 
+    public function render_featured( $post ) {
+        wp_nonce_field( 'lbd_featured_nonce', 'lbd_featured_nonce_field' );
+        $featured = get_post_meta( $post->ID, '_lbd_featured', true );
+        ?>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" name="lbd_featured" value="1" <?php checked( $featured, '1' ); ?>>
+            <span>Marcar como destacado</span>
+        </label>
+        <p class="description" style="margin-top:8px;">Los negocios destacados aparecen primero en el listado y muestran un badge especial.</p>
+        <?php
+    }
+
     public function save_metaboxes( $post_id ) {
         // Verificar nonces
         if ( ! isset( $_POST['lbd_contact_info_nonce_field'] ) || ! wp_verify_nonce( $_POST['lbd_contact_info_nonce_field'], 'lbd_contact_info_nonce' ) ) {
@@ -280,6 +301,9 @@ class Business_Metaboxes {
             return;
         }
         if ( ! isset( $_POST['lbd_gallery_nonce_field'] ) || ! wp_verify_nonce( $_POST['lbd_gallery_nonce_field'], 'lbd_gallery_nonce' ) ) {
+            return;
+        }
+        if ( ! isset( $_POST['lbd_featured_nonce_field'] ) || ! wp_verify_nonce( $_POST['lbd_featured_nonce_field'], 'lbd_featured_nonce' ) ) {
             return;
         }
 
@@ -332,6 +356,10 @@ class Business_Metaboxes {
             }
         }
         update_post_meta( $post_id, '_lbd_gallery', $gallery );
+
+        // Guardar destacado
+        $featured = ! empty( $_POST['lbd_featured'] ) ? '1' : '';
+        $this->save_field( $post_id, '_lbd_featured', $featured );
     }
 
     private function save_field( $post_id, $key, $value ) {

@@ -4,15 +4,14 @@ namespace LBD\Frontend;
 class Search_Shortcode {
 
     public function __construct() {
-        add_shortcode( 'business_directory_search', [ $this, 'render_shortcode' ] );
+        add_shortcode( 'business_directory_search', [ $this, 'render_search_shortcode' ] );
+        add_shortcode( 'business_directory_list', [ $this, 'render_list_shortcode' ] );
         add_action( 'wp_ajax_lbd_search_businesses', [ $this, 'ajax_search' ] );
         add_action( 'wp_ajax_nopriv_lbd_search_businesses', [ $this, 'ajax_search' ] );
     }
 
-    public function render_shortcode( $atts ) {
-        $atts = shortcode_atts( [
-            'per_page' => 12,
-        ], $atts, 'business_directory_search' );
+    public function render_search_shortcode( $atts ) {
+        $atts = shortcode_atts( [], $atts, 'business_directory_search' );
 
         wp_enqueue_style( 'lbd-frontend' );
         wp_enqueue_script( 'lbd-frontend' );
@@ -62,7 +61,22 @@ class Search_Shortcode {
                     </div>
                 </div>
             </form>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
 
+    public function render_list_shortcode( $atts ) {
+        $atts = shortcode_atts( [
+            'per_page' => 12,
+        ], $atts, 'business_directory_list' );
+
+        wp_enqueue_style( 'lbd-frontend' );
+        wp_enqueue_script( 'lbd-frontend' );
+
+        ob_start();
+        ?>
+        <div class="lbd-list-wrapper">
             <div class="lbd-results-info" id="lbd-results-info" style="display:none;">
                 <p><span id="lbd-results-count">0</span> negocios encontrados</p>
             </div>
@@ -84,7 +98,8 @@ class Search_Shortcode {
             'post_type'      => 'business',
             'posts_per_page' => $per_page,
             'post_status'    => 'publish',
-            'orderby'        => 'title',
+            'meta_key'       => '_lbd_featured',
+            'orderby'        => [ 'meta_value_num' => 'DESC', 'title' => 'ASC' ],
             'order'          => 'ASC',
         ];
 
@@ -115,11 +130,11 @@ class Search_Shortcode {
             'posts_per_page' => $per_page,
             'paged'          => $page,
             'post_status'    => 'publish',
-            'orderby'        => 'title',
+            'meta_key'       => '_lbd_featured',
+            'orderby'        => [ 'meta_value_num' => 'DESC', 'title' => 'ASC' ],
             'order'          => 'ASC',
         ];
 
-        $meta_query = [];
         if ( $keyword ) {
             $args['s'] = $keyword;
         }
@@ -173,21 +188,25 @@ class Search_Shortcode {
     }
 
     public function render_business_card( $post_id ) {
-        $title   = get_the_title( $post_id );
-        $logo    = get_post_meta( $post_id, '_lbd_logo', true );
-        $tagline = get_post_meta( $post_id, '_lbd_tagline', true );
-        $address = get_post_meta( $post_id, '_lbd_address', true );
-        $phone   = get_post_meta( $post_id, '_lbd_phone', true );
+        $title    = get_the_title( $post_id );
+        $logo     = get_post_meta( $post_id, '_lbd_logo', true );
+        $tagline  = get_post_meta( $post_id, '_lbd_tagline', true );
+        $address  = get_post_meta( $post_id, '_lbd_address', true );
+        $phone    = get_post_meta( $post_id, '_lbd_phone', true );
         $whatsapp = get_post_meta( $post_id, '_lbd_whatsapp', true );
-        $url     = get_permalink( $post_id );
-        $thumb   = get_the_post_thumbnail_url( $post_id, 'medium' );
+        $featured = get_post_meta( $post_id, '_lbd_featured', true );
+        $url      = get_permalink( $post_id );
+        $thumb    = get_the_post_thumbnail_url( $post_id, 'medium' );
 
         $rubros     = get_the_terms( $post_id, 'business_rubro' );
         $categorias = get_the_terms( $post_id, 'business_categoria' );
         $zonas      = get_the_terms( $post_id, 'business_zona' );
         ?>
-        <div class="lbd-card" data-id="<?php echo esc_attr( $post_id ); ?>">
+        <div class="lbd-card<?php echo $featured ? ' lbd-card-featured' : ''; ?>" data-id="<?php echo esc_attr( $post_id ); ?>">
             <div class="lbd-card-image">
+                <?php if ( $featured ) : ?>
+                    <span class="lbd-card-featured-badge">Destacado</span>
+                <?php endif; ?>
                 <?php if ( $thumb ) : ?>
                     <a href="<?php echo esc_url( $url ); ?>">
                         <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy">

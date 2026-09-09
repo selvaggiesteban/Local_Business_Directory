@@ -58,6 +58,7 @@ class Business {
             if ( $key === 'title' ) {
                 $new_columns['business_logo'] = 'Logo';
                 $new_columns['business_name'] = 'Nombre';
+                $new_columns['business_featured'] = 'Destacado';
             }
             $new_columns[ $key ] = $value;
             if ( $key === 'title' ) {
@@ -74,6 +75,14 @@ class Business {
                 $logo = get_post_meta( $post_id, '_lbd_logo', true );
                 if ( $logo ) {
                     echo wp_get_attachment_image( $logo, [ 50, 50 ] );
+                }
+                break;
+            case 'business_featured':
+                $featured = get_post_meta( $post_id, '_lbd_featured', true );
+                if ( $featured ) {
+                    echo '<span style="color:#f59e0b;font-size:18px;" title="Destacado">&#9733;</span>';
+                } else {
+                    echo '<span style="color:#d1d5db;font-size:18px;">&#9734;</span>';
                 }
                 break;
             case 'business_rubro':
