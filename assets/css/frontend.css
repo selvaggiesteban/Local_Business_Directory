@@ -169,15 +169,16 @@
 
 .lbd-card-logo {
     position: absolute;
-    bottom: -20px;
+    bottom: 12px;
     left: 16px;
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     border: 3px solid var(--lbd-bg);
     overflow: hidden;
     background: var(--lbd-bg);
     box-shadow: var(--lbd-shadow);
+    z-index: 3;
 }
 
 .lbd-card-logo img {
