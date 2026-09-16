@@ -79,7 +79,7 @@
 
 .lbd-search-btn {
     padding: 10px 28px;
-    background: var(--lbd-primary);
+    background: #000;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -91,7 +91,7 @@
 }
 
 .lbd-search-btn:hover {
-    background: var(--lbd-primary-dark);
+    background: #333;
 }
 
 /* Results Info */
