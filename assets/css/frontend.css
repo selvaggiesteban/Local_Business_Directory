@@ -79,9 +79,9 @@
 
 .lbd-search-btn {
     padding: 10px 28px;
-    background: #000;
-    color: #fff;
-    border: none;
+    background: #000 !important;
+    color: #fff !important;
+    border: none !important;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
@@ -91,7 +91,7 @@
 }
 
 .lbd-search-btn:hover {
-    background: #333;
+    background: #333 !important;
 }
 
 /* Results Info */
