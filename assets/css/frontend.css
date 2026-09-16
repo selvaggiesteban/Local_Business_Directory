@@ -941,21 +941,21 @@
 
 .lbd-whatsapp-send-btn {
     display: block;
-    background: var(--lbd-whatsapp);
-    color: #fff;
+    background: var(--lbd-whatsapp) !important;
+    color: #fff !important;
     text-decoration: none;
     padding: 10px 20px;
     border-radius: 25px;
     font-size: 14px;
     font-weight: 600;
     transition: background 0.2s;
-    border: none;
+    border: none !important;
     cursor: pointer;
     width: 100%;
 }
 
 .lbd-whatsapp-send-btn:hover {
-    background: #1ebc5b;
+    background: #1ebc5b !important;
 }
 
 @media (max-width: 768px) {
