@@ -364,10 +364,77 @@ if ( $post ) :
 
     <?php if ( $whatsapp ) : ?>
     <?php $wa_msg = urlencode( '¡Hola! Somos ' . $title . ' ¿En qué podemos ayudarte?' ); ?>
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/<?php echo esc_attr( $whatsapp ); ?>?text=<?php echo $wa_msg; ?>" target="_blank" rel="noopener" class="lbd-whatsapp-float" title="WhatsApp">
-        <img src="<?php echo esc_url( LBD_PLUGIN_URL . 'assets/img/whatsapp.svg' ); ?>" alt="WhatsApp">
-    </a>
+    <!-- Floating WhatsApp Container -->
+    <div class="lbd-whatsapp-container">
+        <!-- Chat Popup -->
+        <div class="lbd-whatsapp-popup" id="lbd-whatsapp-popup">
+            <div class="lbd-whatsapp-header">
+                <img src="<?php echo esc_url( LBD_PLUGIN_URL . 'assets/img/whatsapp.svg' ); ?>" alt="WhatsApp">
+                <div class="lbd-whatsapp-header-text">
+                    <strong><?php echo esc_html( $title ); ?></strong>
+                    <span>En línea</span>
+                </div>
+                <button class="lbd-whatsapp-close" id="lbd-whatsapp-close" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="lbd-whatsapp-body">
+                <div class="lbd-whatsapp-msg">
+                    <?php echo esc_html( '¡Hola! Somos ' . $title . ' ¿En qué podemos ayudarte?' ); ?>
+                </div>
+            </div>
+            <div class="lbd-whatsapp-footer">
+                <a href="https://wa.me/<?php echo esc_attr( $whatsapp ); ?>?text=<?php echo $wa_msg; ?>" target="_blank" rel="noopener" class="lbd-whatsapp-send-btn">
+                    Iniciar Chat
+                </a>
+            </div>
+        </div>
+        <!-- Trigger Button -->
+        <a href="javascript:void(0);" class="lbd-whatsapp-float" id="lbd-whatsapp-trigger" title="WhatsApp">
+            <img src="<?php echo esc_url( LBD_PLUGIN_URL . 'assets/img/whatsapp.svg' ); ?>" alt="WhatsApp">
+        </a>
+    </div>
+
+    <script>
+    (function(){
+        var trigger = document.getElementById('lbd-whatsapp-trigger');
+        var popup = document.getElementById('lbd-whatsapp-popup');
+        var close = document.getElementById('lbd-whatsapp-close');
+        if (!trigger || !popup) return;
+
+        function openPopup(){
+            popup.classList.add('active');
+            popup.style.display = 'block';
+            setTimeout(function(){
+                popup.style.opacity = '1';
+                popup.style.transform = 'scale(1) translateX(0)';
+            }, 10);
+        }
+
+        function closePopup(){
+            popup.style.opacity = '0';
+            popup.style.transform = 'scale(0.8) translateX(20px)';
+            setTimeout(function(){
+                popup.classList.remove('active');
+                popup.style.display = 'none';
+            }, 300);
+        }
+
+        trigger.addEventListener('click', function(e){
+            e.preventDefault();
+            if(popup.classList.contains('active')){
+                closePopup();
+            } else {
+                openPopup();
+            }
+        });
+
+        close.addEventListener('click', function(){
+            closePopup();
+        });
+
+        // Auto-open after 2 seconds
+        setTimeout(openPopup, 2000);
+    })();
+    </script>
     <?php endif; ?>
 
 <script>
