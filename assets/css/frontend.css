@@ -897,12 +897,13 @@
 .lbd-whatsapp-body {
     padding: 20px;
     background: #e5ddd5; /* WhatsApp background color */
-    min-height: 100px;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
 }
 
-.lbd-whatsapp-msg {
+.lbd-whatsapp-msg-received {
     background: #fff;
     padding: 10px 15px;
     border-radius: 0 12px 12px 12px;
@@ -910,7 +911,25 @@
     color: var(--lbd-text);
     box-shadow: var(--lbd-shadow);
     max-width: 85%;
-    position: relative;
+    align-self: flex-start;
+}
+
+.lbd-whatsapp-input-wrap {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lbd-whatsapp-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--lbd-border);
+    border-radius: 8px;
+    font-size: 14px;
+    resize: none;
+    font-family: inherit;
+    box-sizing: border-box;
 }
 
 .lbd-whatsapp-footer {
@@ -930,6 +949,9 @@
     font-size: 14px;
     font-weight: 600;
     transition: background 0.2s;
+    border: none;
+    cursor: pointer;
+    width: 100%;
 }
 
 .lbd-whatsapp-send-btn:hover {

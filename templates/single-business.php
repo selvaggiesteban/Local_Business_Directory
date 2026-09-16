@@ -363,7 +363,7 @@ if ( $post ) :
     </div>
 
     <?php if ( $whatsapp ) : ?>
-    <?php $wa_msg = urlencode( '¡Hola! Somos ' . $title . ' ¿En qué podemos ayudarte?' ); ?>
+    <?php $wa_msg_text = '¡Hola! Somos ' . $title . ' ¿En qué podemos ayudarte?'; ?>
     <!-- Floating WhatsApp Container -->
     <div class="lbd-whatsapp-container">
         <!-- Chat Popup -->
@@ -377,14 +377,19 @@ if ( $post ) :
                 <button class="lbd-whatsapp-close" id="lbd-whatsapp-close" aria-label="Cerrar">&times;</button>
             </div>
             <div class="lbd-whatsapp-body">
-                <div class="lbd-whatsapp-msg">
-                    <?php echo esc_html( '¡Hola! Somos ' . $title . ' ¿En qué podemos ayudarte?' ); ?>
+                <!-- Received Message -->
+                <div class="lbd-whatsapp-msg-received">
+                    <?php echo esc_html( $wa_msg_text ); ?>
+                </div>
+                <!-- User Input Area -->
+                <div class="lbd-whatsapp-input-wrap">
+                    <textarea id="lbd-whatsapp-user-msg" class="lbd-whatsapp-input" rows="3"><?php echo esc_textarea( $wa_msg_text ); ?></textarea>
                 </div>
             </div>
             <div class="lbd-whatsapp-footer">
-                <a href="https://wa.me/<?php echo esc_attr( $whatsapp ); ?>?text=<?php echo $wa_msg; ?>" target="_blank" rel="noopener" class="lbd-whatsapp-send-btn">
-                    Iniciar Chat
-                </a>
+                <button id="lbd-whatsapp-send-btn" class="lbd-whatsapp-send-btn">
+                    Enviar Mensaje
+                </button>
             </div>
         </div>
         <!-- Trigger Button -->
@@ -398,6 +403,9 @@ if ( $post ) :
         var trigger = document.getElementById('lbd-whatsapp-trigger');
         var popup = document.getElementById('lbd-whatsapp-popup');
         var close = document.getElementById('lbd-whatsapp-close');
+        var sendBtn = document.getElementById('lbd-whatsapp-send-btn');
+        var userInput = document.getElementById('lbd-whatsapp-user-msg');
+        var whatsappNumber = '<?php echo esc_attr( $whatsapp ); ?>';
         if (!trigger || !popup) return;
 
         function openPopup(){
@@ -429,6 +437,12 @@ if ( $post ) :
 
         close.addEventListener('click', function(){
             closePopup();
+        });
+
+        sendBtn.addEventListener('click', function(){
+            var msg = userInput.value;
+            var url = 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(msg);
+            window.open(url, '_blank');
         });
 
         // Auto-open after 2 seconds
