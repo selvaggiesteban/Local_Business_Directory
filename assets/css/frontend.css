@@ -344,7 +344,7 @@
 .lbd-single-hero {
     position: relative;
     width: 100%;
-    min-height: 100vh;
+    min-height: 50vh;
     display: flex;
     align-items: flex-end;
     margin-bottom: 0;
@@ -715,6 +715,9 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .lbd-single-hero {
+        min-height: 80vh;
+    }
     .lbd-gallery-item {
         flex: 0 0 70vw;
         max-width: none;
