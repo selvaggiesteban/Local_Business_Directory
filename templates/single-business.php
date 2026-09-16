@@ -383,7 +383,7 @@ if ( $post ) :
                 </div>
                 <!-- User Input Area -->
                 <div class="lbd-whatsapp-input-wrap">
-                    <textarea id="lbd-whatsapp-user-msg" class="lbd-whatsapp-input" rows="3"><?php echo esc_textarea( $wa_msg_text ); ?></textarea>
+                    <textarea id="lbd-whatsapp-user-msg" class="lbd-whatsapp-input" rows="3" placeholder="Escribe aquí tu mensaje..."></textarea>
                 </div>
             </div>
             <div class="lbd-whatsapp-footer">
