@@ -344,7 +344,7 @@
 .lbd-single-hero {
     position: relative;
     width: 100%;
-    min-height: 450px;
+    min-height: 100vh;
     display: flex;
     align-items: flex-end;
     margin-bottom: 0;
@@ -964,7 +964,8 @@
         right: 20px;
     }
     .lbd-whatsapp-popup {
-        right: 64px;
+        right: 0;
+        bottom: 65px;
         width: 280px;
     }
 }
