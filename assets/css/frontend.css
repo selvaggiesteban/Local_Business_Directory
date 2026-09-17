@@ -275,13 +275,13 @@
 }
 
 .lbd-btn-view {
-    background: var(--lbd-primary);
-    color: #fff;
+    background: #000 !important;
+    color: #fff !important;
     margin-left: auto;
 }
 
 .lbd-btn-view:hover {
-    background: var(--lbd-primary-dark);
+    background: #333 !important;
 }
 
 /* No Results */
