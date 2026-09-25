@@ -5,6 +5,7 @@ class Search_Shortcode {
 
     public function __construct() {
         add_shortcode( 'business_directory_search', [ $this, 'render_search_shortcode' ] );
+        add_shortcode( 'business_directory_search_simple', [ $this, 'render_simple_search_shortcode' ] );
         add_shortcode( 'business_directory_list', [ $this, 'render_list_shortcode' ] );
         add_action( 'wp_ajax_lbd_search_businesses', [ $this, 'ajax_search' ] );
         add_action( 'wp_ajax_nopriv_lbd_search_businesses', [ $this, 'ajax_search' ] );
@@ -55,6 +56,31 @@ class Search_Shortcode {
                                 <option value="<?php echo esc_attr( $zona->slug ); ?>"><?php echo esc_html( $zona->name ); ?></option>
                             <?php endforeach; ?>
                         </select>
+                    </div>
+                    <div class="lbd-search-field lbd-search-btn-wrapper">
+                        <button type="submit" class="lbd-search-btn" id="lbd-search-submit">Buscar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function render_simple_search_shortcode( $atts ) {
+        $atts = shortcode_atts( [], $atts, 'business_directory_search_simple' );
+
+        wp_enqueue_style( 'lbd-frontend' );
+        wp_enqueue_script( 'lbd-frontend' );
+
+        ob_start();
+        ?>
+        <div class="lbd-search-wrapper">
+            <form class="lbd-search-form" id="lbd-search-form">
+                <div class="lbd-search-fields">
+                    <div class="lbd-search-field">
+                        <label for="lbd-search-keyword">Buscar</label>
+                        <input type="text" id="lbd-search-keyword" name="keyword" placeholder="Nombre del negocio...">
                     </div>
                     <div class="lbd-search-field lbd-search-btn-wrapper">
                         <button type="submit" class="lbd-search-btn" id="lbd-search-submit">Buscar</button>
