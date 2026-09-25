@@ -9,13 +9,13 @@ A professional, high-performance WordPress plugin designed to create and manage 
 ## Key Features
 
 ### For Visitors
-- **Advanced AJAX Search**: Lightning-fast search with real-time filtering by category, industry (rubro), and zone without page reloads.
+- **Inclusive AJAX Search**: Lightning-fast search with real-time filtering. The engine intelligently prioritizes featured businesses while ensuring all registered businesses are discoverable.
 - **Interactive Business Profiles**: Dedicated single pages for each business featuring:
     - **Visual Gallery**: Responsive image carousel with lightbox effect.
-    - **Direct Contact**: One-click call and a modern **WhatsApp Chat Popup** with automated personalized greeting and interactive input.
+    - **Simulated WhatsApp Chat**: A sophisticated chat-popup experience that simulates a real conversation with automated personalized greetings and interactive input.
     - **Location Integration**: Integrated Google Maps for easy navigation.
     - **Operational Hours**: Clear and organized business schedule.
-- **Fully Responsive**: Optimized for all devices (Mobile, Tablet, Desktop).
+- **Modern UI/UX**: Clean, professional aesthetic with a high-contrast design (black and white accents) and a fully responsive layout optimized for Mobile, Tablet, and Desktop.
 
 ### For Administrators
 - **Custom Post Type (CPT)**: Specialized "Negocio" post type for easy management.
@@ -24,7 +24,7 @@ A professional, high-performance WordPress plugin designed to create and manage 
     - `business_categoria` (Category)
     - `business_zona` (Zone/Location)
 - **Rich Metadata**: Custom metaboxes to manage logos, taglines, contact details, social media links, and operational hours.
-- **Shortcode-Driven**: Easily embed the business search and directory anywhere on your site using shortcodes.
+- **Flexible Integration**: Easily embed the directory anywhere on your site using powerful shortcodes.
 
 ## Installation
 
@@ -40,7 +40,9 @@ Navigate to **Negocios $\rightarrow$ Add New**. Fill in the title, description, 
 
 ### Displaying the Directory
 Use the provided shortcodes in your pages or posts:
-- `[lbd_search]` - Renders the advanced AJAX search form and the business results grid.
+- `[business_directory_search]` - Renders the advanced AJAX search form with all filters (Rubro, Category, Zone).
+- `[business_directory_search_simple]` - Renders a minimalist search bar (keyword only).
+- `[business_directory_list]` - Renders the business results grid with pagination.
 
 ## Technical Stack
 
