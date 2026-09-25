@@ -124,8 +124,21 @@ class Search_Shortcode {
             'post_type'      => 'business',
             'posts_per_page' => $per_page,
             'post_status'    => 'publish',
-            'meta_key'       => '_lbd_featured',
-            'orderby'        => [ 'meta_value_num' => 'DESC', 'title' => 'ASC' ],
+            'meta_query'     => [
+                'relation' => 'OR',
+                [
+                    'key'     => '_lbd_featured',
+                    'compare' => 'EXISTS',
+                ],
+                [
+                    'key'     => '_lbd_featured',
+                    'compare' => 'NOT EXISTS',
+                ],
+            ],
+            'orderby'        => [
+                'meta_value_num' => 'DESC',
+                'title'           => 'ASC',
+            ],
             'order'          => 'ASC',
         ];
 
@@ -156,8 +169,21 @@ class Search_Shortcode {
             'posts_per_page' => $per_page,
             'paged'          => $page,
             'post_status'    => 'publish',
-            'meta_key'       => '_lbd_featured',
-            'orderby'        => [ 'meta_value_num' => 'DESC', 'title' => 'ASC' ],
+            'meta_query'     => [
+                'relation' => 'OR',
+                [
+                    'key'     => '_lbd_featured',
+                    'compare' => 'EXISTS',
+                ],
+                [
+                    'key'     => '_lbd_featured',
+                    'compare' => 'NOT EXISTS',
+                ],
+            ],
+            'orderby'        => [
+                'meta_value_num' => 'DESC',
+                'title'           => 'ASC',
+            ],
             'order'          => 'ASC',
         ];
 
