@@ -60,12 +60,16 @@ class Rewrite_Rules {
     }
 
     public function add_to_wp_sitemaps( $post_types ) {
-        $post_types["business"] = new \WP_Sitemaps_Posts( "business" );
+        if ( class_exists( 'WP_Sitemaps_Posts' ) ) {
+            $post_types["business"] = new \WP_Sitemaps_Posts( "business" );
+        }
         return $post_types;
     }
 
     public function add_to_google_sitemap( $post_types ) {
-        $post_types[] = "business";
+        if ( function_exists( 'google_sitemap_generator_add_post_type' ) ) {
+            $post_types[] = "business";
+        }
         return $post_types;
     }
 }
