@@ -159,10 +159,12 @@ class Search_Shortcode {
         $atts = shortcode_atts( [
             'per_page'    => 12,
             'columns'     => 3,
-            'show_header' => true,
+            'show_header' => 'true',
             'header_title' => 'Negocios Destacados',
             'header_text'  => 'Los mejores negocios seleccionados para vos',
         ], $atts, 'business_directory_featured' );
+
+        $show_header = filter_var( $atts['show_header'], FILTER_VALIDATE_BOOLEAN );
 
         wp_enqueue_style( 'lbd-frontend' );
         wp_enqueue_script( 'lbd-frontend' );
@@ -170,7 +172,7 @@ class Search_Shortcode {
         ob_start();
         ?>
         <div class="lbd-list-wrapper lbd-featured-wrapper">
-            <?php if ( filter_var( $atts['show_header'], FILTER_VALIDATE_BOOLEAN ) ) : ?>
+            <?php if ( $show_header ) : ?>
                 <div class="lbd-featured-header">
                     <h2><?php echo esc_html( $atts['header_title'] ); ?></h2>
                     <?php if ( $atts['header_text'] ) : ?>
