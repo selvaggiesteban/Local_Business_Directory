@@ -42,7 +42,18 @@ Navigate to **Negocios $\rightarrow$ Add New**. Fill in the title, description, 
 Use the provided shortcodes in your pages or posts:
 - `[business_directory_search]` - Renders the advanced AJAX search form with all filters (Rubro, Category, Zone).
 - `[business_directory_search_simple]` - Renders a minimalist search bar (keyword only).
-- `[business_directory_list]` - Renders the business results grid with pagination.
+- `[business_directory_list per_page="12"]` - Renders the business results grid with pagination.
+- `[business_directory_featured per_page="12" columns="3" show_header="true" header_title="Negocios Destacados" header_text="Los mejores negocios seleccionados para vos"]` - **NEW:** Renders only featured businesses in a customizable grid layout.
+
+#### Featured Businesses Shortcode Attributes
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `per_page` | `12` | Number of featured businesses to display |
+| `columns` | `3` | Number of columns in the grid (1-4) |
+| `show_header` | `true` | Show/hide the header section (true/false) |
+| `header_title` | `Negocios Destacados` | Custom header title |
+| `header_text` | `Los mejores negocios seleccionados para vos` | Custom header subtitle text |
 
 ## Technical Stack
 

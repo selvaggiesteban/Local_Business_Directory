@@ -972,3 +972,67 @@
         width: 280px;
     }
 }
+
+/* Featured Businesses Wrapper */
+.lbd-featured-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.lbd-featured-wrapper .lbd-results-grid {
+    display: grid;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+/* Grid columns based on data-columns attribute */
+.lbd-featured-wrapper .lbd-results-grid[data-columns="1"] {
+    grid-template-columns: repeat(1, 1fr);
+}
+.lbd-featured-wrapper .lbd-results-grid[data-columns="2"] {
+    grid-template-columns: repeat(2, 1fr);
+}
+.lbd-featured-wrapper .lbd-results-grid[data-columns="3"] {
+    grid-template-columns: repeat(3, 1fr);
+}
+.lbd-featured-wrapper .lbd-results-grid[data-columns="4"] {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Responsive grid for featured */
+@media (max-width: 1024px) {
+    .lbd-featured-wrapper .lbd-results-grid[data-columns="4"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .lbd-featured-wrapper .lbd-results-grid[data-columns="3"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .lbd-featured-wrapper .lbd-results-grid[data-columns="4"],
+    .lbd-featured-wrapper .lbd-results-grid[data-columns="3"],
+    .lbd-featured-wrapper .lbd-results-grid[data-columns="2"] {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Featured header section */
+.lbd-featured-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+}
+
+.lbd-featured-header h2 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    color: var(--lbd-text);
+}
+
+.lbd-featured-header p {
+    color: var(--lbd-text-light);
+    margin: 0;
+    font-size: 16px;
+}

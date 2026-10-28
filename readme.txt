@@ -28,6 +28,14 @@ Un plugin completo para crear y gestionar un directorio de negocios locales en W
 * Menú de administración "Agregar Negocio"
 * Plantillas de frontend incluidas
 * Responsive y móvil-friendly
+* **Shortcode para listar solo negocios destacados**
+
+**Shortcodes disponibles:**
+
+* `[business_directory_search]` - Buscador completo con filtros
+* `[business_directory_search_simple]` - Buscador simple (solo palabra clave)
+* `[business_directory_list per_page="12"]` - Listado completo de negocios
+* `[business_directory_featured per_page="12" columns="3" show_header="true" header_title="Negocios Destacados" header_text="Los mejores negocios seleccionados para vos"]` - **NUEVO:** Listado solo de negocios destacados
 
 **Campos del negocio:**
 

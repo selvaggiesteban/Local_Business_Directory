@@ -7,6 +7,7 @@ class Search_Shortcode {
         add_shortcode( 'business_directory_search', [ $this, 'render_search_shortcode' ] );
         add_shortcode( 'business_directory_search_simple', [ $this, 'render_simple_search_shortcode' ] );
         add_shortcode( 'business_directory_list', [ $this, 'render_list_shortcode' ] );
+        add_shortcode( 'business_directory_featured', [ $this, 'render_featured_shortcode' ] );
         add_action( 'wp_ajax_lbd_search_businesses', [ $this, 'ajax_search' ] );
         add_action( 'wp_ajax_nopriv_lbd_search_businesses', [ $this, 'ajax_search' ] );
     }
@@ -151,6 +152,73 @@ class Search_Shortcode {
             wp_reset_postdata();
         else :
             echo '<div class="lbd-no-results"><p>No se encontraron negocios. Agregá el primer negocio desde el panel de WordPress.</p></div>';
+        endif;
+    }
+
+    public function render_featured_shortcode( $atts ) {
+        $atts = shortcode_atts( [
+            'per_page'    => 12,
+            'columns'     => 3,
+            'show_header' => true,
+            'header_title' => 'Negocios Destacados',
+            'header_text'  => 'Los mejores negocios seleccionados para vos',
+        ], $atts, 'business_directory_featured' );
+
+        wp_enqueue_style( 'lbd-frontend' );
+        wp_enqueue_script( 'lbd-frontend' );
+
+        ob_start();
+        ?>
+        <div class="lbd-list-wrapper lbd-featured-wrapper">
+            <?php if ( filter_var( $atts['show_header'], FILTER_VALIDATE_BOOLEAN ) ) : ?>
+                <div class="lbd-featured-header">
+                    <h2><?php echo esc_html( $atts['header_title'] ); ?></h2>
+                    <?php if ( $atts['header_text'] ) : ?>
+                        <p><?php echo esc_html( $atts['header_text'] ); ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="lbd-results-info" id="lbd-featured-results-info" style="display:none;">
+                <p><span id="lbd-featured-results-count">0</span> negocios destacados</p>
+            </div>
+
+            <div class="lbd-results-grid" id="lbd-featured-results-grid" data-columns="<?php echo esc_attr( $atts['columns'] ); ?>">
+                <?php
+                $this->load_featured_results( $atts['per_page'] );
+                ?>
+            </div>
+
+            <div class="lbd-pagination" id="lbd-featured-pagination"></div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private function load_featured_results( $per_page ) {
+        $args = [
+            'post_type'      => 'business',
+            'posts_per_page' => $per_page,
+            'post_status'    => 'publish',
+            'meta_key'       => '_lbd_featured',
+            'meta_value'     => '1',
+            'meta_compare'   => '=',
+            'orderby'        => [
+                'meta_value_num' => 'DESC',
+                'title'           => 'ASC',
+            ],
+            'order'          => 'ASC',
+        ];
+
+        $query = new \WP_Query( $args );
+
+        if ( $query->have_posts() ) :
+            while ( $query->have_posts() ) : $query->the_post();
+                $this->render_business_card( get_the_ID() );
+            endwhile;
+            wp_reset_postdata();
+        else :
+            echo '<div class="lbd-no-results"><p>No hay negocios destacados por el momento.</p></div>';
         endif;
     }
 
