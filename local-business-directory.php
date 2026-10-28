@@ -25,6 +25,7 @@ define( 'LBD_PLUGIN_FILE', __FILE__ );
 
 /**
  * Autoloader simple para clases del plugin
+ * Debe registrarse ANTES de los hooks de activación
  */
 spl_autoload_register( function ( $class ) {
     $prefix = 'LBD\\';
@@ -42,26 +43,6 @@ spl_autoload_register( function ( $class ) {
         require_once $file;
     }
 } );
-
-/**
- * Inicialización principal del plugin
- */
-function lbd_init() {
-    // Cargar textdomain
-    load_plugin_textdomain( 'local-business-directory', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-
-    // Inicializar módulos
-    new LBD\PostTypes\Business();
-    new LBD\Taxonomies\Rubro();
-    new LBD\Taxonomies\Categoria();
-    new LBD\Taxonomies\Zona();
-    new LBD\Metaboxes\Business_Metaboxes();
-    new LBD\Admin\Menu();
-    new LBD\Frontend\Search_Shortcode();
-    new LBD\Frontend\Rewrite_Rules();
-    new LBD\Assets\Frontend_Assets();
-}
-add_action( 'plugins_loaded', 'lbd_init' );
 
 /**
  * Activación del plugin
@@ -85,3 +66,23 @@ function lbd_deactivate() {
     flush_rewrite_rules();
 }
 register_deactivation_hook( __FILE__, 'lbd_deactivate' );
+
+/**
+ * Inicialización principal del plugin
+ */
+function lbd_init() {
+    // Cargar textdomain
+    load_plugin_textdomain( 'local-business-directory', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+
+    // Inicializar módulos
+    new LBD\PostTypes\Business();
+    new LBD\Taxonomies\Rubro();
+    new LBD\Taxonomies\Categoria();
+    new LBD\Taxonomies\Zona();
+    new LBD\Metaboxes\Business_Metaboxes();
+    new LBD\Admin\Menu();
+    new LBD\Frontend\Search_Shortcode();
+    new LBD\Frontend\Rewrite_Rules();
+    new LBD\Assets\Frontend_Assets();
+}
+add_action( 'plugins_loaded', 'lbd_init' );
