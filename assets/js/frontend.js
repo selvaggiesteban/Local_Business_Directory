@@ -6,8 +6,19 @@
 
     var currentPage = 1;
     var searchTimer = null;
+    var isInitialLoad = true;
 
-    $(document).on('submit', '#lbd-search-form', function (e) {
+    // Auto-search on load if initialKeyword is set (from results page)
+    $(document).ready(function () {
+        if ( lbdFrontend.initialKeyword ) {
+            $('#lbd-search-keyword').val( lbdFrontend.initialKeyword );
+            currentPage = 1;
+            performSearch();
+        }
+    });
+
+    // Only bind AJAX submit for the full search form (not simple search which uses GET redirect)
+    $(document).on('submit', '.lbd-search-form:not(.lbd-simple-search)', function (e) {
         e.preventDefault();
         currentPage = 1;
         performSearch();
@@ -19,6 +30,10 @@
     });
 
     $(document).on('input', '#lbd-search-keyword', function () {
+        // Only live search for full search form
+        if ( $(this).closest('.lbd-search-form').hasClass('lbd-simple-search') ) {
+            return;
+        }
         clearTimeout(searchTimer);
         var self = this;
         searchTimer = setTimeout(function () {

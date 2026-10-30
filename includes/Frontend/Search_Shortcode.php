@@ -70,40 +70,35 @@ class Search_Shortcode {
 
     public function render_simple_search_shortcode( $atts ) {
         $atts = shortcode_atts( [
-            'per_page' => 12,
+            'results_page' => '', // URL o ID de la página de resultados (con [business_directory_list])
+            'placeholder'  => 'Nombre del negocio...',
+            'button_text'  => 'Buscar',
         ], $atts, 'business_directory_search_simple' );
 
-        wp_enqueue_style( 'lbd-frontend' );
-        wp_enqueue_script( 'lbd-frontend' );
+        // Determinar URL de la página de resultados
+        $results_url = $atts['results_page'];
+        if ( is_numeric( $results_url ) ) {
+            $results_url = get_permalink( (int) $results_url );
+        } elseif ( empty( $results_url ) ) {
+            // Fallback: misma página con parámetro ?lbd_search=1
+            $results_url = add_query_arg( 'lbd_search', '1', get_permalink() );
+        }
 
         ob_start();
         ?>
-        <div class="lbd-search-wrapper">
-            <form class="lbd-search-form" id="lbd-search-form">
+        <div class="lbd-search-wrapper lbd-simple-search">
+            <form class="lbd-search-form" action="<?php echo esc_url( $results_url ); ?>" method="GET">
+                <input type="hidden" name="lbd_search" value="1">
                 <div class="lbd-search-fields">
                     <div class="lbd-search-field">
-                        <label for="lbd-search-keyword">Buscar</label>
-                        <input type="text" id="lbd-search-keyword" name="keyword" placeholder="Nombre del negocio...">
+                        <label for="lbd-search-keyword" class="screen-reader-text">Buscar negocio</label>
+                        <input type="search" id="lbd-search-keyword" name="keyword" placeholder="<?php echo esc_attr( $atts['placeholder'] ); ?>" value="<?php echo isset( $_GET['keyword'] ) ? esc_attr( wp_unslash( $_GET['keyword'] ) ) : ''; ?>">
                     </div>
                     <div class="lbd-search-field lbd-search-btn-wrapper">
-                        <button type="submit" class="lbd-search-btn" id="lbd-search-submit">Buscar</button>
+                        <button type="submit" class="lbd-search-btn" id="lbd-search-submit"><?php echo esc_html( $atts['button_text'] ); ?></button>
                     </div>
                 </div>
             </form>
-
-            <div class="lbd-list-wrapper">
-                <div class="lbd-results-info" id="lbd-results-info" style="display:none;">
-                    <p><span id="lbd-results-count">0</span> negocios encontrados</p>
-                </div>
-
-                <div class="lbd-results-grid" id="lbd-results-grid">
-                    <?php
-                    $this->load_initial_results( $atts['per_page'] );
-                    ?>
-                </div>
-
-                <div class="lbd-pagination" id="lbd-pagination"></div>
-            </div>
         </div>
         <?php
         return ob_get_clean();
@@ -114,8 +109,22 @@ class Search_Shortcode {
             'per_page' => 12,
         ], $atts, 'business_directory_list' );
 
+        // Leer keyword desde URL si viene de búsqueda simple
+        $url_keyword = isset( $_GET['keyword'] ) ? sanitize_text_field( wp_unslash( $_GET['keyword'] ) ) : '';
+
         wp_enqueue_style( 'lbd-frontend' );
         wp_enqueue_script( 'lbd-frontend' );
+
+        // Pasar keyword a JS para AJAX
+        wp_localize_script( 'lbd-frontend', 'lbdFrontend', array_merge(
+            (array) $GLOBALS['lbdFrontend'] ?? [],
+            [
+                'initialKeyword' => $url_keyword,
+                'initialRubro'   => '',
+                'initialCategoria' => '',
+                'initialZona'    => '',
+            ]
+        ) );
 
         ob_start();
         ?>
@@ -126,7 +135,7 @@ class Search_Shortcode {
 
             <div class="lbd-results-grid" id="lbd-results-grid">
                 <?php
-                $this->load_initial_results( $atts['per_page'] );
+                $this->load_initial_results( $atts['per_page'], $url_keyword );
                 ?>
             </div>
 
@@ -136,7 +145,7 @@ class Search_Shortcode {
         return ob_get_clean();
     }
 
-    private function load_initial_results( $per_page ) {
+    private function load_initial_results( $per_page, $keyword = '' ) {
         $args = [
             'post_type'      => 'business',
             'posts_per_page' => $per_page,
@@ -159,6 +168,10 @@ class Search_Shortcode {
             'order'          => 'ASC',
         ];
 
+        if ( $keyword ) {
+            $args['s'] = $keyword;
+        }
+
         $query = new \WP_Query( $args );
 
         if ( $query->have_posts() ) :
@@ -167,7 +180,11 @@ class Search_Shortcode {
             endwhile;
             wp_reset_postdata();
         else :
-            echo '<div class="lbd-no-results"><p>No se encontraron negocios. Agregá el primer negocio desde el panel de WordPress.</p></div>';
+            echo '<div class="lbd-no-results"><p>No se encontraron negocios';
+            if ( $keyword ) {
+                echo ' para &ldquo;' . esc_html( $keyword ) . '&rdquo;';
+            }
+            echo '. Agregá el primer negocio desde el panel de WordPress.</p></div>';
         endif;
     }
 
