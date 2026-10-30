@@ -215,19 +215,38 @@ if ( $post ) :
             $dias = [ 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo' ];
             $nombres = [ 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo' ];
             foreach ( $dias as $i => $dia ) :
-                $active = ! empty( $schedule[ $dia ]['active'] );
-                $open   = $schedule[ $dia ]['open'] ?? '';
-                $close  = $schedule[ $dia ]['close'] ?? '';
+                $day_data = $schedule[ $dia ] ?? [ 'active' => false, 'shifts' => [ [], [] ] ];
+                $active   = ! empty( $day_data['active'] );
+                $shifts   = $day_data['shifts'] ?? [ [], [] ];
             ?>
                 <div class="lbd-schedule-day <?php echo $active ? '' : 'closed'; ?>">
                     <span class="day-name"><?php echo esc_html( $nombres[ $i ] ); ?></span>
-                    <span class="day-hours">
-                        <?php if ( $active && $open && $close ) : ?>
-                            <?php echo esc_html( $open . ' - ' . $close ); ?>
+                    <div class="day-shifts">
+                        <?php if ( $active ) : ?>
+                            <?php foreach ( $shifts as $shift_idx => $shift ) : ?>
+                                <?php
+                                $open  = $shift['open'] ?? '';
+                                $close = $shift['close'] ?? '';
+                                if ( $open || $close ) :
+                                ?>
+                                <span class="shift-time">
+                                    <?php if ( $open && $close ) : ?>
+                                        <?php echo esc_html( $open . ' - ' . $close ); ?>
+                                    <?php elseif ( $open ) : ?>
+                                        <?php echo esc_html( 'Desde ' . $open ); ?>
+                                    <?php elseif ( $close ) : ?>
+                                        <?php echo esc_html( 'Hasta ' . $close ); ?>
+                                    <?php endif; ?>
+                                </span>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                            <?php if ( empty( array_filter( $shifts, fn( $s ) => ( $s['open'] ?? '' ) || ( $s['close'] ?? '' ) ) ) ) : ?>
+                                <span class="shift-time">Sin horarios definidos</span>
+                            <?php endif; ?>
                         <?php else : ?>
-                            Cerrado
+                            <span class="shift-time closed">Cerrado</span>
                         <?php endif; ?>
-                    </span>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>

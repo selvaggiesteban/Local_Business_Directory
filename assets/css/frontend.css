@@ -492,29 +492,54 @@
 /* Schedule Table */
 .lbd-schedule-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 12px;
 }
 
 .lbd-schedule-day {
     display: flex;
-    justify-content: space-between;
-    padding: 10px 14px;
+    flex-direction: column;
+    padding: 12px 14px;
     background: var(--lbd-bg-light);
     border-radius: 8px;
     font-size: 14px;
+    gap: 6px;
 }
 
 .lbd-schedule-day .day-name {
     font-weight: 600;
+    color: var(--lbd-text);
 }
 
-.lbd-schedule-day .day-hours {
-    color: var(--lbd-text-light);
+.lbd-schedule-day .day-shifts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.lbd-schedule-day .shift-time {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    background: var(--lbd-bg);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--lbd-primary);
+    border: 1px solid var(--lbd-border);
+    white-space: nowrap;
+}
+
+.lbd-schedule-day .shift-time.closed {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
 }
 
 .lbd-schedule-day.closed {
-    opacity: 0.5;
+    opacity: 0.6;
+}
+
+.lbd-schedule-day.closed .day-name {
     text-decoration: line-through;
 }
 

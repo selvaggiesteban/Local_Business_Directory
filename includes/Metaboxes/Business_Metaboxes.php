@@ -179,30 +179,55 @@ class Business_Metaboxes {
         $schedule = get_post_meta( $post->ID, '_lbd_schedule', true );
         if ( empty( $schedule ) ) {
             $schedule = [
-                'lunes'      => [ 'open' => '09:00', 'close' => '18:00', 'active' => true ],
-                'martes'     => [ 'open' => '09:00', 'close' => '18:00', 'active' => true ],
-                'miercoles'  => [ 'open' => '09:00', 'close' => '18:00', 'active' => true ],
-                'jueves'     => [ 'open' => '09:00', 'close' => '18:00', 'active' => true ],
-                'viernes'    => [ 'open' => '09:00', 'close' => '18:00', 'active' => true ],
-                'sabado'     => [ 'open' => '09:00', 'close' => '13:00', 'active' => true ],
-                'domingo'    => [ 'open' => '', 'close' => '', 'active' => false ],
+                'lunes'      => [ 'active' => true, 'shifts' => [ [ 'open' => '09:00', 'close' => '13:00' ], [ 'open' => '17:00', 'close' => '21:00' ] ] ],
+                'martes'     => [ 'active' => true, 'shifts' => [ [ 'open' => '09:00', 'close' => '13:00' ], [ 'open' => '17:00', 'close' => '21:00' ] ] ],
+                'miercoles'  => [ 'active' => true, 'shifts' => [ [ 'open' => '09:00', 'close' => '13:00' ], [ 'open' => '17:00', 'close' => '21:00' ] ] ],
+                'jueves'     => [ 'active' => true, 'shifts' => [ [ 'open' => '09:00', 'close' => '13:00' ], [ 'open' => '17:00', 'close' => '21:00' ] ] ],
+                'viernes'    => [ 'active' => true, 'shifts' => [ [ 'open' => '09:00', 'close' => '13:00' ], [ 'open' => '17:00', 'close' => '21:00' ] ] ],
+                'sabado'     => [ 'active' => true, 'shifts' => [ [ 'open' => '09:00', 'close' => '13:00' ], [] ] ],
+                'domingo'    => [ 'active' => false, 'shifts' => [ [], [] ] ],
             ];
+        }
+        // Normalizar estructura antigua
+        foreach ( $schedule as $dia => $data ) {
+            if ( isset( $data['open'] ) || isset( $data['close'] ) ) {
+                $schedule[ $dia ] = [
+                    'active' => ! empty( $data['active'] ),
+                    'shifts' => [
+                        [ 'open' => $data['open'] ?? '', 'close' => $data['close'] ?? '' ],
+                        [ 'open' => '', 'close' => '' ],
+                    ],
+                ];
+            } elseif ( ! isset( $data['shifts'] ) ) {
+                $schedule[ $dia ] = [
+                    'active' => ! empty( $data['active'] ),
+                    'shifts' => [ [ 'open' => '', 'close' => '' ], [ 'open' => '', 'close' => '' ] ],
+                ];
+            }
         }
         ?>
         <style>
             .lbd-schedule-table { width: 100%; border-collapse: collapse; }
             .lbd-schedule-table th { text-align: left; padding: 8px; background: #f1f1f1; }
-            .lbd-schedule-table td { padding: 8px; border-bottom: 1px solid #eee; }
-            .lbd-schedule-table input[type="time"] { width: 120px; }
+            .lbd-schedule-table td { padding: 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+            .lbd-schedule-table input[type="time"] { width: 110px; }
             .lbd-schedule-table input[type="checkbox"] { margin-right: 8px; }
+            .lbd-shift-row { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+            .lbd-shift-row:last-child { margin-bottom: 0; }
+            .lbd-shift-label { width: 55px; font-size: 12px; color: #666; font-weight: 500; flex-shrink: 0; }
+            .lbd-shift-inputs { display: flex; gap: 6px; flex: 1; }
+            .lbd-shift-inputs input[type="time"] { flex: 1; min-width: 100px; }
+            .lbd-day-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+            .lbd-day-header .dashicons { font-size: 20px; width: 20px; height: 20px; cursor: pointer; color: #2271b1; }
+            .lbd-day-header .dashicons:hover { color: #005177; }
         </style>
         <table class="lbd-schedule-table">
             <thead>
                 <tr>
-                    <th>Día</th>
-                    <th>Activo</th>
-                    <th>Horario de apertura</th>
-                    <th>Horario de cierre</th>
+                    <th style="width: 130px;">Día</th>
+                    <th style="width: 80px;">Activo</th>
+                    <th>Turno Mañana</th>
+                    <th>Turno Tarde</th>
                 </tr>
             </thead>
             <tbody>
@@ -210,20 +235,38 @@ class Business_Metaboxes {
                 $dias = [ 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo' ];
                 $nombres = [ 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo' ];
                 foreach ( $dias as $i => $dia ) :
-                    $active = ! empty( $schedule[ $dia ]['active'] ) ? 'checked' : '';
-                    $open   = isset( $schedule[ $dia ]['open'] ) ? $schedule[ $dia ]['open'] : '';
-                    $close  = isset( $schedule[ $dia ]['close'] ) ? $schedule[ $dia ]['close'] : '';
+                    $day_data   = $schedule[ $dia ] ?? [ 'active' => true, 'shifts' => [ [], [] ] ];
+                    $active     = ! empty( $day_data['active'] ) ? 'checked' : '';
+                    $shifts     = $day_data['shifts'] ?? [ [], [] ];
+                    $shift1     = $shifts[0] ?? [ 'open' => '', 'close' => '' ];
+                    $shift2     = $shifts[1] ?? [ 'open' => '', 'close' => '' ];
                 ?>
                 <tr>
                     <td><strong><?php echo esc_html( $nombres[ $i ] ); ?></strong></td>
                     <td><input type="checkbox" name="lbd_schedule[<?php echo esc_attr( $dia ); ?>][active]" value="1" <?php echo $active; ?>></td>
-                    <td><input type="time" name="lbd_schedule[<?php echo esc_attr( $dia ); ?>][open]" value="<?php echo esc_attr( $open ); ?>"></td>
-                    <td><input type="time" name="lbd_schedule[<?php echo esc_attr( $dia ); ?>][close]" value="<?php echo esc_attr( $close ); ?>"></td>
+                    <td>
+                        <div class="lbd-shift-row">
+                            <span class="lbd-shift-label">Apertura</span>
+                            <div class="lbd-shift-inputs">
+                                <input type="time" name="lbd_schedule[<?php echo esc_attr( $dia ); ?>][shifts][0][open]" value="<?php echo esc_attr( $shift1['open'] ?? '' ); ?>" placeholder="--:--">
+                                <input type="time" name="lbd_schedule[<?php echo esc_attr( $dia ); ?>][shifts][0][close]" value="<?php echo esc_attr( $shift1['close'] ?? '' ); ?>" placeholder="--:--">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lbd-shift-row">
+                            <span class="lbd-shift-label">Apertura</span>
+                            <div class="lbd-shift-inputs">
+                                <input type="time" name="lbd_schedule[<?php echo esc_attr( $dia ); ?>][shifts][1][open]" value="<?php echo esc_attr( $shift2['open'] ?? '' ); ?>" placeholder="--:--">
+                                <input type="time" name="lbd_schedule[<?php echo esc_attr( $dia ); ?>][shifts][1][close]" value="<?php echo esc_attr( $shift2['close'] ?? '' ); ?>" placeholder="--:--">
+                            </div>
+                        </div>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <p class="description">Desmarcá los días en que el negocio está cerrado.</p>
+        <p class="description">Desmarcá "Activo" en los días que el negocio está cerrado. Dejá vacíos los turnos que no apliquen.</p>
         <?php
     }
 
@@ -331,14 +374,29 @@ class Business_Metaboxes {
         $this->save_field( $post_id, '_lbd_linkedin', esc_url_raw( wp_unslash( $_POST['lbd_linkedin'] ?? '' ) ) );
         $this->save_field( $post_id, '_lbd_website', esc_url_raw( wp_unslash( $_POST['lbd_website'] ?? '' ) ) );
 
-        // Guardar horarios
+        // Guardar horarios (estructura con shifts)
         $schedule = [];
         if ( ! empty( $_POST['lbd_schedule'] ) && is_array( $_POST['lbd_schedule'] ) ) {
             foreach ( $_POST['lbd_schedule'] as $dia => $data ) {
-                $schedule[ sanitize_key( $dia ) ] = [
+                $key = sanitize_key( $dia );
+                $shifts = [];
+                if ( ! empty( $data['shifts'] ) && is_array( $data['shifts'] ) ) {
+                    foreach ( $data['shifts'] as $shift ) {
+                        $open  = sanitize_text_field( $shift['open'] ?? '' );
+                        $close = sanitize_text_field( $shift['close'] ?? '' );
+                        // Solo guardar turnos que tengan al menos apertura o cierre
+                        if ( $open !== '' || $close !== '' ) {
+                            $shifts[] = [ 'open' => $open, 'close' => $close ];
+                        }
+                    }
+                }
+                // Asegurar que siempre haya 2 slots (pueden estar vacíos)
+                while ( count( $shifts ) < 2 ) {
+                    $shifts[] = [ 'open' => '', 'close' => '' ];
+                }
+                $schedule[ $key ] = [
                     'active' => ! empty( $data['active'] ),
-                    'open'   => sanitize_text_field( $data['open'] ?? '' ),
-                    'close'  => sanitize_text_field( $data['close'] ?? '' ),
+                    'shifts' => array_slice( $shifts, 0, 2 ),
                 ];
             }
         }

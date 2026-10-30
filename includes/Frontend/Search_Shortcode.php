@@ -69,7 +69,9 @@ class Search_Shortcode {
     }
 
     public function render_simple_search_shortcode( $atts ) {
-        $atts = shortcode_atts( [], $atts, 'business_directory_search_simple' );
+        $atts = shortcode_atts( [
+            'per_page' => 12,
+        ], $atts, 'business_directory_search_simple' );
 
         wp_enqueue_style( 'lbd-frontend' );
         wp_enqueue_script( 'lbd-frontend' );
@@ -88,6 +90,20 @@ class Search_Shortcode {
                     </div>
                 </div>
             </form>
+
+            <div class="lbd-list-wrapper">
+                <div class="lbd-results-info" id="lbd-results-info" style="display:none;">
+                    <p><span id="lbd-results-count">0</span> negocios encontrados</p>
+                </div>
+
+                <div class="lbd-results-grid" id="lbd-results-grid">
+                    <?php
+                    $this->load_initial_results( $atts['per_page'] );
+                    ?>
+                </div>
+
+                <div class="lbd-pagination" id="lbd-pagination"></div>
+            </div>
         </div>
         <?php
         return ob_get_clean();
