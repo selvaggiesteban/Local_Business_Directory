@@ -11,6 +11,12 @@ class Frontend_Assets {
     }
 
     public function enqueue_frontend() {
+        // wp_localize_script DEBE ir antes de wp_enqueue_script para el mismo handle
+        wp_localize_script( 'lbd-frontend', 'lbdFrontend', [
+            'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'lbd_search_nonce' ),
+        ] );
+
         wp_enqueue_style(
             'lbd-frontend',
             LBD_PLUGIN_URL . 'assets/css/frontend.css',
@@ -25,11 +31,6 @@ class Frontend_Assets {
             LBD_VERSION . '.' . time(),
             true
         );
-
-        wp_localize_script( 'lbd-frontend', 'lbdFrontend', [
-            'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-            'nonce'   => wp_create_nonce( 'lbd_search_nonce' ),
-        ] );
     }
 
     public function load_single_template( $template ) {

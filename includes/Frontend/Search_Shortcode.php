@@ -78,16 +78,16 @@ class Search_Shortcode {
 
         $show_results = filter_var( $atts['show_results'], FILTER_VALIDATE_BOOLEAN );
 
-        wp_enqueue_style( 'lbd-frontend' );
-        wp_enqueue_script( 'lbd-frontend' );
-
-        // Pasar config a JS
+        // Pasar config a JS ANTES de enqueue
         wp_localize_script( 'lbd-frontend', 'lbdFrontend', array_merge(
             (array) $GLOBALS['lbdFrontend'] ?? [],
             [
                 'simpleSearchPerPage' => (int) $atts['per_page'],
             ]
         ) );
+
+        wp_enqueue_style( 'lbd-frontend' );
+        wp_enqueue_script( 'lbd-frontend' );
 
         ob_start();
         ?>
