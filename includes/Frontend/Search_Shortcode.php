@@ -86,8 +86,8 @@ class Search_Shortcode {
 
         ob_start();
         ?>
-        <div class="lbd-search-wrapper lbd-simple-search">
-            <form class="lbd-search-form" action="<?php echo esc_url( $results_url ); ?>" method="GET">
+        <div class="lbd-search-wrapper">
+            <form class="lbd-search-form lbd-simple-search" action="<?php echo esc_url( $results_url ); ?>" method="GET">
                 <input type="hidden" name="lbd_search" value="1">
                 <div class="lbd-search-fields">
                     <div class="lbd-search-field">
