@@ -7,6 +7,7 @@
     var currentPage = 1;
     var searchTimer = null;
     var isInitialLoad = true;
+    var simpleSearchPage = 1;
 
     // Auto-search on load if initialKeyword is set (from results page)
     $(document).ready(function () {
@@ -17,11 +18,18 @@
         }
     });
 
-    // Only bind AJAX submit for the full search form (not simple search which uses GET redirect)
+    // Full search form (with filters) - AJAX submit
     $(document).on('submit', '.lbd-search-form:not(.lbd-simple-search)', function (e) {
         e.preventDefault();
         currentPage = 1;
         performSearch();
+    });
+
+    // Simple search form - AJAX submit with dropdown results
+    $(document).on('submit', '.lbd-simple-search', function (e) {
+        e.preventDefault();
+        simpleSearchPage = 1;
+        performSimpleSearch();
     });
 
     $(document).on('change', '#lbd-search-rubro, #lbd-search-categoria, #lbd-search-zona', function () {
@@ -39,6 +47,16 @@
         searchTimer = setTimeout(function () {
             currentPage = 1;
             performSearch();
+        }, 400);
+    });
+
+    // Live search for simple search (optional - debounced)
+    $(document).on('input', '#lbd-simple-search-keyword', function () {
+        clearTimeout(searchTimer);
+        var self = this;
+        searchTimer = setTimeout(function () {
+            simpleSearchPage = 1;
+            performSimpleSearch();
         }, 400);
     });
 
@@ -66,6 +84,59 @@
                 $count.text(response.data.total);
                 $info.show();
                 renderPagination(response.data.total_pages, response.data.current_page);
+            } else {
+                $grid.html('<div class="lbd-no-results"><p>Error al buscar negocios.</p></div>').css('opacity', '1');
+                $info.hide();
+            }
+        }).fail(function () {
+            $grid.css('opacity', '1');
+        });
+    }
+
+    function performSimpleSearch() {
+        var $grid = $('#lbd-simple-results-grid');
+        var $info = $('#lbd-simple-results-info');
+        var $count = $('#lbd-simple-results-count');
+        var $resultsContainer = $('#lbd-simple-results');
+        var $form = $('#lbd-simple-search-form');
+
+        var keyword = $('#lbd-simple-search-keyword').val().trim();
+
+        // Si no hay keyword, ocultar resultados
+        if ( ! keyword ) {
+            $resultsContainer.slideUp(200);
+            return;
+        }
+
+        var data = {
+            action: 'lbd_search_businesses',
+            nonce: lbdFrontend.nonce,
+            keyword: keyword,
+            rubro: '',
+            categoria: '',
+            zona: '',
+            page: simpleSearchPage,
+            per_page: lbdFrontend.simpleSearchPerPage || 12
+        };
+
+        $grid.css('opacity', '0.5');
+
+        $.post(lbdFrontend.ajaxUrl, data, function (response) {
+            if (response.success) {
+                $grid.html(response.data.html).css('opacity', '1');
+                $count.text(response.data.total);
+                $info.show();
+                renderSimplePagination(response.data.total_pages, response.data.current_page);
+
+                // Mostrar contenedor con animación
+                if ( $resultsContainer.is(':hidden') ) {
+                    $resultsContainer.slideDown(300);
+                }
+
+                // Scroll suave al contenedor de resultados
+                $('html, body').animate({
+                    scrollTop: $resultsContainer.offset().top - 20
+                }, 300);
             } else {
                 $grid.html('<div class="lbd-no-results"><p>Error al buscar negocios.</p></div>').css('opacity', '1');
                 $info.hide();
@@ -112,6 +183,44 @@
                     currentPage = currentPageNum + 1;
                     performSearch();
                     $('html, body').animate({ scrollTop: $('#lbd-results-grid').offset().top - 20 }, 300);
+                })
+        );
+    }
+
+    function renderSimplePagination(totalPages, currentPageNum) {
+        var $pagination = $('#lbd-simple-pagination');
+        $pagination.empty();
+
+        if (totalPages <= 1) return;
+
+        $pagination.append(
+            $('<button>').text('← Anterior')
+                .prop('disabled', currentPageNum <= 1)
+                .on('click', function () {
+                    simpleSearchPage = currentPageNum - 1;
+                    performSimpleSearch();
+                })
+        );
+
+        for (var i = 1; i <= totalPages; i++) {
+            (function (page) {
+                $pagination.append(
+                    $('<button>').text(page)
+                        .toggleClass('active', page === currentPageNum)
+                        .on('click', function () {
+                            simpleSearchPage = page;
+                            performSimpleSearch();
+                        })
+                );
+            })(i);
+        }
+
+        $pagination.append(
+            $('<button>').text('Siguiente →')
+                .prop('disabled', currentPageNum >= totalPages)
+                .on('click', function () {
+                    simpleSearchPage = currentPageNum + 1;
+                    performSimpleSearch();
                 })
         );
     }

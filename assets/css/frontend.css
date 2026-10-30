@@ -327,6 +327,144 @@
     cursor: not-allowed;
 }
 
+/* Simple Search Dropdown Results */
+.lbd-simple-search-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.lbd-simple-search-wrapper .lbd-search-form {
+    margin-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: 1px solid var(--lbd-border);
+}
+
+.lbd-simple-search-wrapper .lbd-search-fields {
+    align-items: center;
+}
+
+.lbd-simple-search-wrapper .lbd-search-field-grow {
+    flex: 1;
+    min-width: 280px;
+}
+
+.lbd-simple-results {
+    background: var(--lbd-bg);
+    border: 1px solid var(--lbd-border);
+    border-top: none;
+    border-bottom-left-radius: var(--lbd-radius);
+    border-bottom-right-radius: var(--lbd-radius);
+    box-shadow: var(--lbd-shadow-lg);
+    padding: 20px 24px;
+    animation: lbd-slide-down 0.3s ease-out;
+    max-height: 60vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes lbd-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.lbd-simple-results .lbd-results-info {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--lbd-border);
+    font-size: 14px;
+    color: var(--lbd-text-light);
+}
+
+.lbd-simple-results .lbd-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-bottom: 16px;
+    max-height: 45vh;
+}
+
+/* Scrollbar personalizada para el grid */
+.lbd-simple-results .lbd-results-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.lbd-simple-results .lbd-results-grid::-webkit-scrollbar-track {
+    background: var(--lbd-bg-light);
+    border-radius: 4px;
+}
+
+.lbd-simple-results .lbd-results-grid::-webkit-scrollbar-thumb {
+    background: var(--lbd-border);
+    border-radius: 4px;
+}
+
+.lbd-simple-results .lbd-results-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--lbd-text-light);
+}
+
+.lbd-simple-results .lbd-pagination {
+    margin-top: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--lbd-border);
+    flex-wrap: wrap;
+}
+
+.lbd-simple-results .lbd-pagination button {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Card ajustado para resultados compactos */
+.lbd-simple-results .lbd-card {
+    margin: 0;
+}
+
+.lbd-simple-results .lbd-card-image {
+    height: 180px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .lbd-simple-results {
+        max-height: 70vh;
+        padding: 16px;
+    }
+
+    .lbd-simple-results .lbd-results-grid {
+        grid-template-columns: 1fr;
+        max-height: 55vh;
+    }
+
+    .lbd-simple-search-wrapper .lbd-search-field-grow {
+        min-width: 100%;
+    }
+
+    .lbd-simple-search-wrapper .lbd-search-fields {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lbd-simple-search-wrapper .lbd-search-btn-wrapper {
+        width: 100%;
+    }
+
+    .lbd-simple-search-wrapper .lbd-search-btn {
+        width: 100%;
+    }
+}
+
 /* Single Business Page */
 .lbd-single-wrapper {
     max-width: 100%;

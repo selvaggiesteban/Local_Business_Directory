@@ -70,35 +70,53 @@ class Search_Shortcode {
 
     public function render_simple_search_shortcode( $atts ) {
         $atts = shortcode_atts( [
-            'results_page' => '', // URL o ID de la página de resultados (con [business_directory_list])
-            'placeholder'  => 'Nombre del negocio...',
-            'button_text'  => 'Buscar',
+            'per_page'      => 12,
+            'placeholder'   => 'Nombre del negocio...',
+            'button_text'   => 'Buscar',
+            'show_results'  => 'true', // 'true' | 'false' - mostrar contenedor de resultados
         ], $atts, 'business_directory_search_simple' );
 
-        // Determinar URL de la página de resultados
-        $results_url = $atts['results_page'];
-        if ( is_numeric( $results_url ) ) {
-            $results_url = get_permalink( (int) $results_url );
-        } elseif ( empty( $results_url ) ) {
-            // Fallback: misma página con parámetro ?lbd_search=1
-            $results_url = add_query_arg( 'lbd_search', '1', get_permalink() );
-        }
+        $show_results = filter_var( $atts['show_results'], FILTER_VALIDATE_BOOLEAN );
+
+        wp_enqueue_style( 'lbd-frontend' );
+        wp_enqueue_script( 'lbd-frontend' );
+
+        // Pasar config a JS
+        wp_localize_script( 'lbd-frontend', 'lbdFrontend', array_merge(
+            (array) $GLOBALS['lbdFrontend'] ?? [],
+            [
+                'simpleSearchPerPage' => (int) $atts['per_page'],
+            ]
+        ) );
 
         ob_start();
         ?>
-        <div class="lbd-search-wrapper">
-            <form class="lbd-search-form lbd-simple-search" action="<?php echo esc_url( $results_url ); ?>" method="GET">
-                <input type="hidden" name="lbd_search" value="1">
+        <div class="lbd-search-wrapper lbd-simple-search-wrapper">
+            <form class="lbd-search-form lbd-simple-search" id="lbd-simple-search-form">
                 <div class="lbd-search-fields">
-                    <div class="lbd-search-field">
-                        <label for="lbd-search-keyword" class="screen-reader-text">Buscar negocio</label>
-                        <input type="search" id="lbd-search-keyword" name="keyword" placeholder="<?php echo esc_attr( $atts['placeholder'] ); ?>" value="<?php echo isset( $_GET['keyword'] ) ? esc_attr( wp_unslash( $_GET['keyword'] ) ) : ''; ?>">
+                    <div class="lbd-search-field lbd-search-field-grow">
+                        <label for="lbd-simple-search-keyword" class="screen-reader-text">Buscar negocio</label>
+                        <input type="search" id="lbd-simple-search-keyword" name="keyword" placeholder="<?php echo esc_attr( $atts['placeholder'] ); ?>" autocomplete="off">
                     </div>
                     <div class="lbd-search-field lbd-search-btn-wrapper">
-                        <button type="submit" class="lbd-search-btn" id="lbd-search-submit"><?php echo esc_html( $atts['button_text'] ); ?></button>
+                        <button type="submit" class="lbd-search-btn" id="lbd-simple-search-submit"><?php echo esc_html( $atts['button_text'] ); ?></button>
                     </div>
                 </div>
             </form>
+
+            <?php if ( $show_results ) : ?>
+            <div class="lbd-simple-results" id="lbd-simple-results" style="display:none;">
+                <div class="lbd-results-info" id="lbd-simple-results-info">
+                    <p><span id="lbd-simple-results-count">0</span> negocios encontrados</p>
+                </div>
+
+                <div class="lbd-results-grid" id="lbd-simple-results-grid">
+                    <!-- Resultados cargados vía AJAX -->
+                </div>
+
+                <div class="lbd-pagination" id="lbd-simple-pagination"></div>
+            </div>
+            <?php endif; ?>
         </div>
         <?php
         return ob_get_clean();
