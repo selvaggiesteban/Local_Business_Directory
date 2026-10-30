@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace LBD\Frontend;
 
 class Rewrite_Rules {

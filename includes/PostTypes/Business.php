@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace LBD\PostTypes;
 
 class Business {
