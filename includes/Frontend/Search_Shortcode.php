@@ -80,7 +80,10 @@ class Search_Shortcode {
 
         // Pasar config a JS ANTES de enqueue
         wp_localize_script( 'lbd-frontend', 'lbdFrontend', array_merge(
-            (array) $GLOBALS['lbdFrontend'] ?? [],
+            [
+                'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+                'nonce'   => wp_create_nonce( 'lbd_search_nonce' ),
+            ],
             [
                 'simpleSearchPerPage' => (int) $atts['per_page'],
             ]
